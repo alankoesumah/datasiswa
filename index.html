@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pusat Data Siswa - SD Nasional Plus Tunas Global</title>
+    <title>Pusat Data Siswa - SDNP Plus Tunas Global</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -49,6 +49,7 @@
             </nav>
         </div>
         <div class="p-4 border-t border-[#5c4c68] space-y-2">
+            <button onclick="openAdmin()" id="nav-admin" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition bg-amber-400/15 hover:bg-amber-400/25 text-amber-200 hover:text-amber-100 text-xs font-semibold border border-amber-300/20"><i data-lucide="lock-keyhole" class="w-4 h-4 text-amber-300"></i> Admin <span class="ml-auto text-[10px] font-medium text-amber-300/80">Google Sheet</span></button>
             <button onclick="switchSidebarView('pengaturan')" id="nav-pengaturan" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition hover:bg-white/10 text-purple-200 hover:text-white text-xs font-semibold"><i data-lucide="settings" class="w-4 h-4 text-purple-200"></i> Pengaturan</button>
             <div class="flex items-center gap-3 px-3.5 py-2.5 bg-[#5c4c68]/40 rounded-xl border border-[#5c4c68]">
                 <div class="w-8 h-8 rounded-full bg-[#6e5b7c] text-white font-bold flex items-center justify-center text-xs shadow">AK</div>
@@ -67,7 +68,7 @@
                     <div class="flex items-center space-x-3 cursor-pointer" onclick="switchSidebarView('dashboard')">
                         <div class="bg-[#685376] p-2 rounded-xl border border-[#7a628a] shadow-inner hidden sm:block"><i data-lucide="graduation-cap" class="w-5 h-5 text-purple-200"></i></div>
                         <div>
-                            <h1 class="font-bold text-sm sm:text-base tracking-tight leading-tight">Portal Data Siswa</h1>
+                            <h1 class="font-bold text-sm sm:text-base tracking-tight leading-tight">Pusat Data Siswa</h1>
                             <p class="text-[10px] sm:text-[11px] text-purple-200 font-medium tracking-wide">SD Nasional Plus Tunas Global</p>
                         </div>
                     </div>
@@ -390,6 +391,29 @@
         </main>
     </div>
 
+    <!-- Jendela password Admin -->
+    <div id="adminModal" class="hidden fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4 no-print" onclick="if(event.target===this) closeAdmin()">
+        <form onsubmit="submitAdmin(event)" class="bg-white rounded-3xl shadow-2xl border border-purple-100 p-6 w-full max-w-sm space-y-4" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center"><i data-lucide="lock-keyhole" class="w-5 h-5"></i></div>
+                <div>
+                    <h3 id="adminTitle" class="font-bold text-slate-800">Akses Admin</h3>
+                    <p class="text-xs text-slate-500">Masukkan password untuk membuka Database Siswa.</p>
+                </div>
+            </div>
+            <div>
+                <label for="adminPassword" class="block text-xs font-semibold text-slate-600 mb-1">Password</label>
+                <input type="password" id="adminPassword" autocomplete="off" class="w-full bg-[#fbf9fd] border border-purple-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
+                <p id="adminError" class="hidden text-xs text-red-600 font-medium mt-2"></p>
+                <a id="adminFallbackLink" class="hidden text-xs text-purple-700 font-semibold underline mt-2 inline-block" target="_blank" rel="noopener">Klik di sini untuk membuka Google Sheet</a>
+            </div>
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="closeAdmin()" class="text-xs px-4 py-2.5 rounded-xl border border-purple-200 text-slate-600 font-semibold hover:bg-purple-50 transition">Batal</button>
+                <button type="submit" class="text-xs px-4 py-2.5 rounded-xl bg-[#564563] hover:bg-[#685376] text-white font-semibold transition shadow-sm">Buka Admin</button>
+            </div>
+        </form>
+    </div>
+
     <style id="dynamicThemeStyle"></style>
 
     <script>
@@ -420,6 +444,50 @@
     let activeStudentNIS = null;
     let RAW_CACHE = null;
 
+    /* ===================== AKSES ADMIN ===================== */
+    // Password disimpan sebagai hash SHA-256 (bukan teks biasa). Ini penghalang ringan di sisi browser.
+    const ADMIN_URL = 'https://docs.google.com/spreadsheets/d/1HIld6F9AM9LMKdZnWClrH3d8avQ3_4BXoTYZn-22Oqc/edit?usp=sharing';
+    const ADMIN_PASS_HASH = '740628dba24ab838765644e540a43e0d49c8e4b9ab7bda0050c1e11b07b8d07c';
+
+    async function sha256(text) {
+        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+        return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    function openAdmin() {
+        let unlocked = false;
+        try { unlocked = sessionStorage.getItem('adminOK') === '1'; } catch (e) {}
+        if (unlocked) { window.open(ADMIN_URL, '_blank', 'noopener'); return; }
+        if (window.innerWidth < 1024) document.getElementById('sidebar').classList.add('-translate-x-full');
+        document.getElementById('adminPassword').value = '';
+        document.getElementById('adminError').classList.add('hidden');
+        document.getElementById('adminFallbackLink').classList.add('hidden');
+        document.getElementById('adminModal').classList.remove('hidden');
+        lucide.createIcons();
+        setTimeout(() => document.getElementById('adminPassword').focus(), 50);
+    }
+    function closeAdmin() { document.getElementById('adminModal').classList.add('hidden'); }
+    async function submitAdmin(e) {
+        e.preventDefault();
+        const input = document.getElementById('adminPassword'), err = document.getElementById('adminError');
+        if (!window.crypto || !crypto.subtle) {
+            err.innerText = 'Browser ini tidak mendukung verifikasi password. Buka halaman lewat https.';
+            err.classList.remove('hidden'); return;
+        }
+        if ((await sha256(input.value)) !== ADMIN_PASS_HASH) {
+            err.innerText = 'Password salah. Coba lagi.';
+            err.classList.remove('hidden'); input.select(); return;
+        }
+        try { sessionStorage.setItem('adminOK', '1'); } catch (e2) {}
+        const w = window.open(ADMIN_URL, '_blank', 'noopener');
+        if (w) closeAdmin();
+        else { // pop-up diblokir browser: sediakan tautan manual
+            err.classList.add('hidden');
+            const a = document.getElementById('adminFallbackLink');
+            a.href = ADMIN_URL; a.classList.remove('hidden');
+        }
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAdmin(); });
+
     /* ===================== UTILITAS ===================== */
     const _norm = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
     const _digits = v => String(v ?? '').replace(/\D/g, '');
@@ -438,6 +506,10 @@
         if (m) return new Date(+m[3], +m[2] - 1, +m[1]).getTime();
         const d = Date.parse(s); return isNaN(d) ? 0 : d;
     };
+    const _canonKelas = k => String(k || '').replace(/\u00a0/g, ' ').toLowerCase()
+        .replace(/^kelas\s+/, '').replace(/(\d+)\s*[.\-)]\s*/, '$1 ')
+        .replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
+    const kelasOf = (nis, fallback) => (appData.biodata.find(s => s.nis === nis) || {}).kelas || fallback || '';
     const _kelasOrder = (a, b) => (parseInt(a) || 99) - (parseInt(b) || 99) || a.localeCompare(b, 'id', { numeric: true });
     const _num = v => parseFloat(String(v).replace(',', '.')) || 0;
 
@@ -652,7 +724,18 @@
             const kN = _findKey(h, /^nomorinduk|^nis/), kK = _findKey(h, /^kelas/), kT = _findKey(h, /tahunajaran|tahun/);
             if (kN && kK && kT) D.masterBaca.rows.forEach(r => addEnr(_digits(r[kN]), r[kT], r[kK]));
         }
-        const enrList = [...enr.values()].filter(e => students.has(e.nis));
+        // Samakan variasi penulisan kelas ("1. Einstein", "1 Einstein", "1.einstein", spasi ganda)
+        // supaya siswa dengan penulisan berbeda tetap masuk satu kelas yang sama.
+        const enrRaw = [...enr.values()].filter(e => students.has(e.nis));
+        const tally = new Map();
+        enrRaw.forEach(e => {
+            const k = e.year + '|' + _canonKelas(e.kelas), raw = e.kelas.replace(/\s+/g, ' ').trim();
+            const m = tally.get(k) || new Map(); m.set(raw, (m.get(raw) || 0) + 1); tally.set(k, m);
+        });
+        const enrList = enrRaw.map(e => {
+            const best = [...tally.get(e.year + '|' + _canonKelas(e.kelas)).entries()].sort((a, b) => b[1] - a[1])[0][0];
+            return { ...e, kelas: best };
+        });
         const years = [...new Set(enrList.map(e => e.year))].sort().reverse();
         if (years.length && !years.includes(_year(currentYear))) currentYear = years[0];
         const riwayatOf = nis => enrList.filter(e => e.nis === nis).sort((a, b) => b.year.localeCompare(a.year));
@@ -937,7 +1020,7 @@
                 <div class="h-40 bg-slate-100 relative"><img src="${_esc(p.foto)}" alt="Foto" class="w-full h-full object-cover" loading="lazy" referrerpolicy="no-referrer" onerror="this.src='https://placehold.co/400x300/684e7d/ffffff?text=Prestasi'"><span class="absolute top-3 right-3 bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow">${_esc(p.pencapaian)}</span></div>
                 <div class="p-5 space-y-2">
                     <h4 class="font-bold text-slate-800 text-sm">${_esc(p.namaLomba)}</h4>
-                    <p class="text-xs text-purple-700 font-semibold">Siswa: ${_esc(p.namaSiswa || p.nis)}${p.kelas ? ' (' + _esc(p.kelas) + ')' : ''}</p>
+                    <p class="text-xs text-purple-700 font-semibold">Siswa: ${_esc(p.namaSiswa || p.nis)}${kelasOf(p.nis, p.kelas) ? ' (' + _esc(kelasOf(p.nis, p.kelas)) + ')' : ''}</p>
                     <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 pt-2 border-t border-purple-50">
                         <div><span class="text-slate-400 block text-[10px]">Kategori</span><strong>${_esc(p.kategori)}</strong></div>
                         <div><span class="text-slate-400 block text-[10px]">Penyelenggara</span><strong>${_esc(p.penyelenggara)}</strong></div>
@@ -949,7 +1032,7 @@
         c.innerHTML = [...appData.insiden].sort((a, b) => _ts(b.tanggal) - _ts(a.tanggal)).map(i => `
             <div class="bg-white border border-purple-100 p-5 rounded-2xl shadow-sm space-y-2">
                 <div class="flex items-center justify-between"><span class="text-xs bg-amber-100 text-amber-900 font-bold px-2.5 py-1 rounded-lg">${_esc(i.jenis)}</span><span class="text-xs text-slate-500 font-medium">${_esc(i.tanggal)}</span></div>
-                <h4 class="font-bold text-slate-800 text-sm">Siswa: ${_esc(i.nama || i.student_id)}${i.kelas ? ' (' + _esc(i.kelas) + ')' : ''} · ${_esc(i.peran)}</h4>
+                <h4 class="font-bold text-slate-800 text-sm">Siswa: ${_esc(i.nama || i.student_id)}${kelasOf(i.student_id, i.kelas) ? ' (' + _esc(kelasOf(i.student_id, i.kelas)) + ')' : ''} · ${_esc(i.peran)}</h4>
                 <p class="text-xs text-slate-700"><strong>Ringkasan:</strong> ${_esc(i.catatan)}</p>
                 <p class="text-xs text-slate-500"><strong>Upaya:</strong> ${_esc(i.tindakan)}</p>
             </div>`).join('');
@@ -961,7 +1044,7 @@
             <tr class="hover:bg-purple-50/50 transition">
                 <td class="px-4 py-3 text-xs text-slate-600">${_esc(b.tanggal)}</td>
                 <td class="px-4 py-3 text-xs font-bold text-slate-800">${_esc(b.nama_lengkap || b.nis)}</td>
-                <td class="px-4 py-3 text-xs text-slate-600">${_esc(b.kelas)}</td>
+                <td class="px-4 py-3 text-xs text-slate-600">${_esc(kelasOf(b.nis, b.kelas))}</td>
                 <td class="px-4 py-3 text-xs font-semibold text-slate-800">${_esc(b.judul_buku)}</td>
                 <td class="px-4 py-3 text-xs"><span class="bg-purple-100 text-purple-900 px-2 py-0.5 rounded">${_esc(b.level)}</span></td>
                 <td class="px-4 py-3 text-xs font-bold text-emerald-600">+${_esc(b.poin)} Poin</td>
