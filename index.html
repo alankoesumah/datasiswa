@@ -4,179 +4,115 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Data Siswa - SD Nasional Plus Tunas Global</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- PapaParse for CSV parsing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
         @media print {
             body { background: white !important; }
             .no-print { display: none !important; }
-            .print-only { display: block !important; }
             aside { display: none !important; }
-            main { margin-left: 0 !important; padding: 0 !important; }
+            .lg\:ml-64 { margin-left: 0 !important; }
         }
-        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #fbf9fd; }
         ::-webkit-scrollbar-thumb { background: #e5def0; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #cfc1e2; }
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
     </style>
 </head>
 <body class="bg-[#fbf9fd] text-slate-800 min-h-screen flex flex-col">
 
-    <!-- Sidebar Navigation -->
+    <!-- Sidebar -->
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-[#4a3d54] text-purple-100 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col justify-between border-r border-[#5c4c68] no-print">
         <div class="p-5 overflow-y-auto">
-            <!-- Brand -->
             <div class="flex items-center space-x-3 mb-8 cursor-pointer" onclick="switchSidebarView('dashboard')">
-                <div class="bg-[#5c4c68] p-2.5 rounded-2xl border border-[#6e5b7c] shadow-inner text-purple-200">
-                    <i data-lucide="graduation-cap" class="w-6 h-6"></i>
-                </div>
+                <div class="bg-[#5c4c68] p-2.5 rounded-2xl border border-[#6e5b7c] shadow-inner text-purple-200"><i data-lucide="graduation-cap" class="w-6 h-6"></i></div>
                 <div>
                     <h1 class="font-bold text-sm tracking-tight leading-tight text-white">TUNAS GLOBAL</h1>
                     <p class="text-[11px] text-[#d6cce2] font-medium tracking-wide">PORTAL DATA SISWA</p>
                 </div>
             </div>
-
-            <!-- Nav links -->
             <nav class="space-y-1.5 text-xs font-semibold">
-                <button onclick="switchSidebarView('dashboard')" id="nav-dashboard" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition bg-[#5c4c68] text-white shadow-sm">
-                    <i data-lucide="home" class="w-4 h-4 text-purple-200"></i> Dashboard
-                </button>
-                <button onclick="switchSidebarView('datasiswa')" id="nav-datasiswa" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition hover:bg-[#5c4c68]/60 text-purple-200 hover:text-white">
-                    <i data-lucide="users" class="w-4 h-4 text-purple-200"></i> Data Siswa
-                </button>
-
-                <div class="pt-4 pb-1">
-                    <p class="px-3 text-[10px] font-extrabold uppercase tracking-wider text-purple-300">── DATA SISWA ────────────</p>
-                </div>
-
-                <button onclick="switchSidebarView('prestasi')" id="nav-prestasi" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition hover:bg-[#5c4c68]/60 text-purple-200 hover:text-white">
-                    <i data-lucide="award" class="w-4 h-4 text-emerald-300"></i> Prestasi
-                </button>
-                <button onclick="switchSidebarView('insiden')" id="nav-insiden" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition hover:bg-[#5c4c68]/60 text-purple-200 hover:text-white">
-                    <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-300"></i> Jurnal Peristiwa
-                </button>
-                <button onclick="switchSidebarView('bacaan')" id="nav-bacaan" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition hover:bg-[#5c4c68]/60 text-purple-200 hover:text-white">
-                    <i data-lucide="book-open" class="w-4 h-4 text-purple-200"></i> Daftar Bacaan
-                </button>
-
-                <div class="pt-4 pb-1">
-                    <p class="px-3 text-[10px] font-extrabold uppercase tracking-wider text-purple-300">── ANALISIS ──────────────</p>
-                </div>
-
-                <button onclick="switchSidebarView('rekapitulasi')" id="nav-rekapitulasi" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition hover:bg-[#5c4c68]/60 text-purple-200 hover:text-white">
-                    <i data-lucide="bar-chart-3" class="w-4 h-4 text-purple-200"></i> Rekapitulasi
-                </button>
-                <button onclick="switchSidebarView('statistik')" id="nav-statistik" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition hover:bg-[#5c4c68]/60 text-purple-200 hover:text-white">
-                    <i data-lucide="trending-up" class="w-4 h-4 text-teal-300"></i> Statistik
-                </button>
+                <button onclick="switchSidebarView('dashboard')" id="nav-dashboard" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition bg-white/20 text-white shadow-sm"><i data-lucide="home" class="w-4 h-4 text-purple-200"></i> Dashboard</button>
+                <button onclick="switchSidebarView('datasiswa')" id="nav-datasiswa" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition hover:bg-white/10 text-purple-200 hover:text-white"><i data-lucide="users" class="w-4 h-4 text-purple-200"></i> Data Siswa</button>
+                <div class="pt-4 pb-1"><p class="px-3 text-[10px] font-extrabold uppercase tracking-wider text-purple-300">── DATA SISWA ────────────</p></div>
+                <button onclick="switchSidebarView('prestasi')" id="nav-prestasi" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition hover:bg-white/10 text-purple-200 hover:text-white"><i data-lucide="award" class="w-4 h-4 text-emerald-300"></i> Prestasi</button>
+                <button onclick="switchSidebarView('insiden')" id="nav-insiden" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition hover:bg-white/10 text-purple-200 hover:text-white"><i data-lucide="alert-triangle" class="w-4 h-4 text-amber-300"></i> Jurnal Peristiwa</button>
+                <button onclick="switchSidebarView('bacaan')" id="nav-bacaan" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition hover:bg-white/10 text-purple-200 hover:text-white"><i data-lucide="book-open" class="w-4 h-4 text-purple-200"></i> Daftar Bacaan</button>
+                <div class="pt-4 pb-1"><p class="px-3 text-[10px] font-extrabold uppercase tracking-wider text-purple-300">── ANALISIS ──────────────</p></div>
+                <button onclick="switchSidebarView('rekapitulasi')" id="nav-rekapitulasi" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition hover:bg-white/10 text-purple-200 hover:text-white"><i data-lucide="bar-chart-3" class="w-4 h-4 text-purple-200"></i> Rekapitulasi</button>
+                <button onclick="switchSidebarView('statistik')" id="nav-statistik" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition hover:bg-white/10 text-purple-200 hover:text-white"><i data-lucide="trending-up" class="w-4 h-4 text-teal-300"></i> Statistik</button>
             </nav>
         </div>
-
-        <!-- Bottom footer of sidebar -->
         <div class="p-4 border-t border-[#5c4c68] space-y-2">
-            <button onclick="switchSidebarView('pengaturan')" id="nav-pengaturan" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition hover:bg-[#5c4c68]/60 text-purple-200 hover:text-white text-xs font-semibold">
-                <i data-lucide="settings" class="w-4 h-4 text-purple-200"></i> Pengaturan
-            </button>
+            <button onclick="switchSidebarView('pengaturan')" id="nav-pengaturan" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition hover:bg-white/10 text-purple-200 hover:text-white text-xs font-semibold"><i data-lucide="settings" class="w-4 h-4 text-purple-200"></i> Pengaturan</button>
             <div class="flex items-center gap-3 px-3.5 py-2.5 bg-[#5c4c68]/40 rounded-xl border border-[#5c4c68]">
                 <div class="w-8 h-8 rounded-full bg-[#6e5b7c] text-white font-bold flex items-center justify-center text-xs shadow">AK</div>
-                <div class="overflow-hidden">
-                    <p class="text-xs font-bold text-white truncate">Alan Koesumah</p>
-                    <p class="text-[10px] text-purple-200 truncate">Administrator</p>
-                </div>
+                <div class="overflow-hidden"><p class="text-xs font-bold text-white truncate">Alan Koesumah</p><p class="text-[10px] text-purple-200 truncate">Administrator</p></div>
             </div>
+            <p id="appVersion" class="text-[10px] text-purple-300 text-center"></p>
         </div>
     </aside>
 
-    <!-- Main Content Wrapper -->
     <div class="flex-1 lg:ml-64 flex flex-col min-h-screen">
 
         <header id="mainHeader" class="bg-[#564563] text-white shadow-md sticky top-0 z-30 no-print border-b border-[#685376]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                    <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl bg-[#685376] hover:bg-[#7a628a] text-white">
-                        <i data-lucide="menu" class="w-5 h-5"></i>
-                    </button>
+                    <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl bg-[#685376] hover:bg-[#7a628a] text-white"><i data-lucide="menu" class="w-5 h-5"></i></button>
                     <div class="flex items-center space-x-3 cursor-pointer" onclick="switchSidebarView('dashboard')">
-                        <div class="bg-[#685376] p-2 rounded-xl border border-[#7a628a] shadow-inner hidden sm:block">
-                            <i data-lucide="graduation-cap" class="w-5 h-5 text-purple-200"></i>
-                        </div>
+                        <div class="bg-[#685376] p-2 rounded-xl border border-[#7a628a] shadow-inner hidden sm:block"><i data-lucide="graduation-cap" class="w-5 h-5 text-purple-200"></i></div>
                         <div>
                             <h1 class="font-bold text-sm sm:text-base tracking-tight leading-tight">Portal Data Siswa</h1>
                             <p class="text-[10px] sm:text-[11px] text-purple-200 font-medium tracking-wide">SD Nasional Plus Tunas Global</p>
                         </div>
                     </div>
                 </div>
-
                 <div class="flex items-center space-x-2 sm:space-x-3">
-                    <!-- Tahun Pelajaran Selector -->
                     <div class="flex items-center bg-[#42344d]/75 border border-[#685376] rounded-xl px-3 py-1.5 text-xs">
                         <span class="text-purple-300 mr-2 hidden sm:inline">Tahun:</span>
                         <select id="globalYearSelect" onchange="changeYear(this.value)" class="bg-transparent text-white font-semibold focus:outline-none cursor-pointer">
                             <option value="2026/2027" class="bg-[#564563] text-white">2026/2027</option>
-                            <option value="2025/2026" class="bg-[#564563] text-white">2025/2026</option>
-                            <option value="2024/2025" class="bg-[#564563] text-white">2024/2025</option>
                         </select>
                     </div>
-
                     <button onclick="toggleDataSource()" id="dataSourceBtn" class="text-xs bg-[#685376] hover:bg-[#7a628a] px-3 py-2 rounded-xl border border-[#7a628a] transition hidden sm:flex items-center gap-1.5 font-medium shadow-sm">
-                        <i data-lucide="database" class="w-3.5 h-3.5 text-purple-200"></i>
-                        <span id="dataSourceText">Mode: Live Google Sheets</span>
+                        <i data-lucide="database" class="w-3.5 h-3.5 text-purple-200"></i><span id="dataSourceText">Mode: Live Google Sheets</span>
                     </button>
-                    <button onclick="refreshData()" class="bg-[#685376] hover:bg-[#7a628a] p-2 rounded-xl border border-[#7a628a] transition" title="Muat Ulang Data">
-                        <i data-lucide="refresh-cw" class="w-4 h-4 text-purple-200"></i>
-                    </button>
+                    <button onclick="refreshData()" class="bg-[#685376] hover:bg-[#7a628a] p-2 rounded-xl border border-[#7a628a] transition" title="Muat Ulang Data"><i data-lucide="refresh-cw" class="w-4 h-4 text-purple-200"></i></button>
                 </div>
             </div>
         </header>
 
         <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
 
-            <!-- Notification Toast -->
-            <div id="toast" class="hidden fixed bottom-5 right-5 z-50 bg-[#4a3d54] text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 transition-all duration-300 border border-[#5c4c68]">
-                <i data-lucide="info" class="w-5 h-5 text-purple-300"></i>
-                <span id="toastMessage" class="text-sm font-medium">Pemberitahuan sistem</span>
+            <div id="toast" class="hidden fixed bottom-5 right-5 z-50 bg-[#4a3d54] text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-[#5c4c68]">
+                <i data-lucide="info" class="w-5 h-5 text-purple-300"></i><span id="toastMessage" class="text-sm font-medium">Pemberitahuan sistem</span>
             </div>
 
-            <!-- Connection Status Banner -->
-            <div id="connectionStatusBanner" class="bg-purple-50/80 border border-purple-200 p-4 rounded-2xl flex items-center justify-between text-xs text-purple-950 no-print shadow-sm">
+            <!-- Status koneksi (menampilkan diagnosa tiap tab) -->
+            <div id="connectionStatusBanner" class="bg-purple-50/80 border border-purple-200 p-4 rounded-2xl flex items-center justify-between gap-3 text-xs text-purple-950 no-print shadow-sm">
                 <div class="flex items-center gap-3">
-                    <div class="bg-purple-600 text-white p-2 rounded-xl shadow-sm">
-                        <i data-lucide="check-circle-2" class="w-4 h-4"></i>
-                    </div>
+                    <div id="connectionIconBox" class="bg-purple-600 text-white p-2 rounded-xl shadow-sm shrink-0"><i data-lucide="check-circle-2" class="w-4 h-4"></i></div>
                     <div>
                         <p class="font-bold">Status Koneksi 4 Google Sheets:</p>
-                        <p id="connectionStatusText" class="text-purple-900">Terkoneksi langsung dengan Google Sheets (Biodata, Prestasi, Insiden, Bacaan).</p>
+                        <p id="connectionStatusText" class="opacity-90">Memuat data…</p>
                     </div>
                 </div>
                 <button onclick="refreshData()" class="bg-[#6b5878] hover:bg-[#7c6689] text-white px-3.5 py-2 rounded-xl font-medium transition shadow-sm whitespace-nowrap">Muat Ulang Data</button>
             </div>
 
-            <!-- Breadcrumb Navigation Bar -->
             <nav id="breadcrumbNav" class="flex items-center space-x-2 text-xs font-medium text-slate-500 bg-white px-4 py-3 rounded-2xl border border-purple-100 shadow-sm no-print">
-                <button onclick="switchSidebarView('dashboard')" class="hover:text-purple-700 flex items-center gap-1">
-                    <i data-lucide="home" class="w-3.5 h-3.5"></i> Beranda
-                </button>
-                <span id="breadcrumbClassContainer" class="hidden items-center space-x-2">
-                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
-                    <span id="breadcrumbClassText" class="text-purple-700 font-semibold">Kelas</span>
-                </span>
-                <span id="breadcrumbStudentContainer" class="hidden items-center space-x-2">
-                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
-                    <span id="breadcrumbStudentText" class="text-slate-800 font-bold">Profil Siswa</span>
-                </span>
+                <button onclick="switchSidebarView('dashboard')" class="hover:text-purple-700 flex items-center gap-1"><i data-lucide="home" class="w-3.5 h-3.5"></i> Beranda</button>
+                <span id="breadcrumbClassContainer" class="hidden items-center space-x-2"><i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i><span id="breadcrumbClassText" class="text-purple-700 font-semibold">Kelas</span></span>
+                <span id="breadcrumbStudentContainer" class="hidden items-center space-x-2"><i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i><span id="breadcrumbStudentText" class="text-slate-800 font-bold">Profil Siswa</span></span>
             </nav>
 
             <!-- VIEW 1: DASHBOARD -->
             <div id="viewDashboard" class="space-y-6">
-                <!-- School Hero Banner -->
                 <div id="heroBanner" class="bg-gradient-to-r from-[#564563] via-[#685376] to-[#796289] text-white p-6 sm:p-8 rounded-3xl shadow-lg relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
                     <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
                     <div class="space-y-2 z-10 text-center md:text-left">
@@ -185,41 +121,26 @@
                         <p class="text-purple-200 text-sm max-w-xl">Sistem Terpusat Data Siswa, Prestasi, Jurnal Peristiwa, dan Aktivitas Membaca dengan Master Key NIS/NIPD.</p>
                     </div>
                     <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 z-10 flex items-center gap-4">
-                        <div class="text-center px-3 border-r border-white/10">
-                            <span class="block text-2xl font-black text-white" id="statTotalSiswa">0</span>
-                            <span class="text-[11px] text-purple-200 uppercase tracking-wider font-medium">Total Siswa</span>
-                        </div>
-                        <div class="text-center px-3">
-                            <span class="block text-2xl font-black text-emerald-300" id="statTotalKelas">0</span>
-                            <span class="text-[11px] text-purple-200 uppercase tracking-wider font-medium">Kelas Aktif</span>
-                        </div>
+                        <div class="text-center px-3 border-r border-white/10"><span class="block text-2xl font-black text-white" id="statTotalSiswa">0</span><span class="text-[11px] text-purple-200 uppercase tracking-wider font-medium">Total Siswa</span></div>
+                        <div class="text-center px-3"><span class="block text-2xl font-black text-emerald-300" id="statTotalKelas">0</span><span class="text-[11px] text-purple-200 uppercase tracking-wider font-medium">Kelas Aktif</span></div>
                     </div>
                 </div>
 
-                <!-- Global Search & Filter Bar -->
                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-purple-100 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div class="relative w-full sm:w-96">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                            <i data-lucide="search" class="w-4 h-4"></i>
-                        </span>
-                        <input type="text" id="globalSearchInput" oninput="handleGlobalSearch(this.value)" placeholder="Cari nama siswa atau NIS/NIPD..." class="w-full pl-10 pr-4 py-2.5 bg-[#fbf9fd] border border-purple-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><i data-lucide="search" class="w-4 h-4"></i></span>
+                        <input type="text" id="globalSearchInput" oninput="handleGlobalSearch(this.value)" autocomplete="off" placeholder="Cari nama siswa atau NIS/NIPD..." class="w-full pl-10 pr-4 py-2.5 bg-[#fbf9fd] border border-purple-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition">
+                        <div id="globalSearchResults" class="hidden absolute z-20 mt-1 w-full bg-white border border-purple-200 rounded-xl shadow-lg max-h-72 overflow-auto"></div>
                     </div>
-                    <div class="text-xs text-slate-500 font-medium">
-                        Pilih salah satu kelas di bawah untuk melihat daftar siswa.
-                    </div>
+                    <div class="text-xs text-slate-500 font-medium">Pilih salah satu kelas di bawah untuk melihat daftar siswa.</div>
                 </div>
 
-                <!-- Daftar Kelas Grid -->
                 <div>
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
-                            <i data-lucide="school" class="w-5 h-5 text-purple-700"></i> Daftar Kelas (<span id="yearLabelDisplay">2026/2027</span>)
-                        </h3>
+                        <h3 class="font-bold text-slate-800 text-base flex items-center gap-2"><i data-lucide="school" class="w-5 h-5 text-purple-700"></i> Daftar Kelas (<span id="yearLabelDisplay">2026/2027</span>)</h3>
                         <span class="text-xs bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-bold">Pilih Kelas</span>
                     </div>
-                    <div id="classListContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                        <!-- Class Cards generated dynamically -->
-                    </div>
+                    <div id="classListContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
                 </div>
             </div>
 
@@ -230,26 +151,16 @@
                         <h2 class="text-xl font-bold text-slate-800">Direktori Seluruh Siswa</h2>
                         <p class="text-xs text-slate-500 mt-0.5">Daftar lengkap siswa aktif Tunas Global pada Tahun Pelajaran <span class="current-year-text">2026/2027</span></p>
                     </div>
-                    <div class="w-full md:w-80">
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                <i data-lucide="search" class="w-4 h-4"></i>
-                            </span>
-                            <input type="text" id="directorySearchInput" oninput="renderDirectoryStudents(this.value)" placeholder="Cari nama atau NIS siswa..." class="w-full pl-10 pr-4 py-2 bg-[#fbf9fd] border border-purple-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
-                        </div>
+                    <div class="w-full md:w-80 relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><i data-lucide="search" class="w-4 h-4"></i></span>
+                        <input type="text" id="directorySearchInput" oninput="renderDirectoryStudents(this.value)" placeholder="Cari nama atau NIS siswa..." class="w-full pl-10 pr-4 py-2 bg-[#fbf9fd] border border-purple-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
                     </div>
                 </div>
                 <div class="bg-white rounded-3xl shadow-sm border border-purple-100 overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm">
                             <thead class="bg-[#f3edf7] text-purple-950 text-xs font-bold uppercase tracking-wider border-b border-purple-200">
-                                <tr>
-                                    <th class="px-6 py-3.5">NIS / NIPD</th>
-                                    <th class="px-6 py-3.5">Nama Siswa</th>
-                                    <th class="px-6 py-3.5">Kelas</th>
-                                    <th class="px-6 py-3.5">Jenis Kelamin</th>
-                                    <th class="px-6 py-3.5 text-right">Aksi</th>
-                                </tr>
+                                <tr><th class="px-6 py-3.5">NIS / NIPD</th><th class="px-6 py-3.5">Nama Siswa</th><th class="px-6 py-3.5">Kelas</th><th class="px-6 py-3.5">Jenis Kelamin</th><th class="px-6 py-3.5 text-right">Aksi</th></tr>
                             </thead>
                             <tbody id="directoryTableBody" class="divide-y divide-purple-50"></tbody>
                         </table>
@@ -257,48 +168,34 @@
                 </div>
             </div>
 
-            <!-- VIEW 3: CLASS STUDENT LIST -->
+            <!-- VIEW 3: DAFTAR SISWA PER KELAS -->
             <div id="viewStudentList" class="hidden space-y-6">
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div class="flex items-center space-x-4">
-                        <div class="w-14 h-14 bg-purple-100 text-purple-800 rounded-2xl flex items-center justify-center font-bold text-xl shadow-inner">
-                            🏫
-                        </div>
+                        <div class="w-14 h-14 bg-purple-100 text-purple-800 rounded-2xl flex items-center justify-center font-bold text-xl shadow-inner">🏫</div>
                         <div>
-                            <button onclick="switchSidebarView('dashboard')" class="text-xs text-purple-700 hover:underline font-medium flex items-center gap-1 mb-1">
-                                <i data-lucide="arrow-left" class="w-3 h-3"></i> Kembali ke Dashboard
-                            </button>
+                            <button onclick="switchSidebarView('dashboard')" class="text-xs text-purple-700 hover:underline font-medium flex items-center gap-1 mb-1"><i data-lucide="arrow-left" class="w-3 h-3"></i> Kembali ke Dashboard</button>
                             <h2 id="currentClassName" class="text-xl font-bold text-slate-800">Kelas</h2>
                             <p class="text-xs text-slate-500 mt-0.5">Tahun Pelajaran: <span id="currentClassYear">2026/2027</span> • Total: <span id="currentClassCount">0</span> siswa</p>
                         </div>
                     </div>
-                    <div class="w-full md:w-80">
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                <i data-lucide="search" class="w-4 h-4"></i>
-                            </span>
-                            <input type="text" id="classSearchInput" oninput="filterClassStudents(this.value)" placeholder="Cari di kelas ini..." class="w-full pl-10 pr-4 py-2 bg-[#fbf9fd] border border-purple-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
-                        </div>
+                    <div class="w-full md:w-80 relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><i data-lucide="search" class="w-4 h-4"></i></span>
+                        <input type="text" id="classSearchInput" oninput="filterClassStudents(this.value)" placeholder="Cari di kelas ini..." class="w-full pl-10 pr-4 py-2 bg-[#fbf9fd] border border-purple-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
                     </div>
                 </div>
                 <div id="classStudentGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </div>
 
-            <!-- VIEW 4: STUDENT PROFILE -->
+            <!-- VIEW 4: PROFIL SISWA -->
             <div id="viewStudentProfile" class="hidden space-y-6">
                 <div id="profileHeaderCard" class="bg-gradient-to-r from-[#564563] to-[#735c82] text-white p-6 sm:p-8 rounded-3xl shadow-lg relative">
                     <div class="absolute top-6 right-6 flex items-center gap-2 no-print">
-                        <button onclick="printStudentReport()" class="bg-white/10 hover:bg-white/20 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-white/15">
-                            <i data-lucide="printer" class="w-4 h-4"></i> Cetak Laporan
-                        </button>
-                        <button onclick="backToStudentList()" class="bg-white/10 hover:bg-white/20 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-white/15">
-                            <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali
-                        </button>
+                        <button onclick="printStudentReport()" class="bg-white/10 hover:bg-white/20 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-white/15"><i data-lucide="printer" class="w-4 h-4"></i> Cetak Laporan</button>
+                        <button onclick="backToStudentList()" class="bg-white/10 hover:bg-white/20 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-white/15"><i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali</button>
                     </div>
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
-                        <div id="profileAvatar" class="w-20 h-20 bg-white/10 border-2 border-white/30 rounded-2xl flex items-center justify-center text-3xl font-bold tracking-wider shadow-inner">
-                            S
-                        </div>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 pt-10 sm:pt-0">
+                        <div id="profileAvatar" class="w-20 h-20 bg-white/10 border-2 border-white/30 rounded-2xl flex items-center justify-center text-3xl font-bold tracking-wider shadow-inner">S</div>
                         <div>
                             <h2 id="profileName" class="text-2xl font-bold leading-tight">Nama Siswa</h2>
                             <div class="flex flex-wrap items-center gap-2.5 mt-2.5 text-xs text-purple-200">
@@ -309,113 +206,71 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="flex space-x-1.5 mt-8 overflow-x-auto no-scrollbar border-b border-white/20 pb-1">
-                        <button onclick="switchProfileTab('biodata')" id="tabBtn-biodata" class="profile-tab px-4 py-2.5 text-xs font-bold rounded-t-xl transition bg-white text-purple-950 flex items-center gap-2 shadow-md">
-                            <i data-lucide="user" class="w-4 h-4 text-purple-700"></i> 1. Biodata
-                        </button>
-                        <button onclick="switchProfileTab('prestasi')" id="tabBtn-prestasi" class="profile-tab px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-purple-200 hover:text-white hover:bg-white/10 flex items-center gap-2">
-                            <i data-lucide="award" class="w-4 h-4 text-emerald-300"></i> 2. Prestasi (<span id="countPrestasi">0</span>)
-                        </button>
-                        <button onclick="switchProfileTab('insiden')" id="tabBtn-insiden" class="profile-tab px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-purple-200 hover:text-white hover:bg-white/10 flex items-center gap-2">
-                            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-300"></i> 3. Insiden (<span id="countInsiden">0</span>)
-                        </button>
-                        <button onclick="switchProfileTab('bacaan')" id="tabBtn-bacaan" class="profile-tab px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-purple-200 hover:text-white hover:bg-white/10 flex items-center gap-2">
-                            <i data-lucide="book-open" class="w-4 h-4 text-purple-200"></i> 4. Bacaan Buku (<span id="countBacaan">0</span>)
-                        </button>
+                    <div class="flex space-x-1.5 mt-8 overflow-x-auto border-b border-white/20 pb-1">
+                        <button onclick="switchProfileTab('biodata')" id="tabBtn-biodata" class="profile-tab px-4 py-2.5 text-xs font-bold rounded-t-xl transition bg-white text-purple-950 flex items-center gap-2 shadow-md whitespace-nowrap"><i data-lucide="user" class="w-4 h-4 text-purple-700"></i> 1. Biodata</button>
+                        <button onclick="switchProfileTab('prestasi')" id="tabBtn-prestasi" class="profile-tab px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-purple-200 hover:text-white hover:bg-white/10 flex items-center gap-2 whitespace-nowrap"><i data-lucide="award" class="w-4 h-4 text-emerald-300"></i> 2. Prestasi (<span id="countPrestasi">0</span>)</button>
+                        <button onclick="switchProfileTab('insiden')" id="tabBtn-insiden" class="profile-tab px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-purple-200 hover:text-white hover:bg-white/10 flex items-center gap-2 whitespace-nowrap"><i data-lucide="alert-triangle" class="w-4 h-4 text-amber-300"></i> 3. Insiden (<span id="countInsiden">0</span>)</button>
+                        <button onclick="switchProfileTab('bacaan')" id="tabBtn-bacaan" class="profile-tab px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-purple-200 hover:text-white hover:bg-white/10 flex items-center gap-2 whitespace-nowrap"><i data-lucide="book-open" class="w-4 h-4 text-purple-200"></i> 4. Bacaan Buku (<span id="countBacaan">0</span>)</button>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-3xl shadow-sm border border-purple-100 p-6 sm:p-8 min-h-[400px]">
-                    <!-- Tab 1: Biodata -->
                     <div id="tabContent-biodata" class="tab-content space-y-6">
-                        <div class="flex items-center justify-between border-b border-purple-50 pb-4">
-                            <div>
-                                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
-                                    <i data-lucide="user-check" class="w-5 h-5 text-purple-700"></i> Data Master & Biodata Siswa
-                                </h3>
-                                <p class="text-xs text-slate-500 mt-0.5">Sumber data: Database Siswa (Master Key NIS/NIPD)</p>
-                            </div>
+                        <div class="border-b border-purple-50 pb-4">
+                            <h3 class="font-bold text-slate-800 text-base flex items-center gap-2"><i data-lucide="user-check" class="w-5 h-5 text-purple-700"></i> Data Master & Biodata Siswa</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Sumber data: Database Siswa (Master Key NIS/NIPD)</p>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-sm" id="biodataGridContainer"></div>
                         <div class="mt-8 pt-6 border-t border-purple-50">
-                            <h4 class="font-bold text-slate-800 text-sm mb-4 flex items-center gap-2">
-                                <i data-lucide="history" class="w-4 h-4 text-purple-700"></i> Riwayat Pendidikan & Kelas Siswa
-                            </h4>
+                            <h4 class="font-bold text-slate-800 text-sm mb-4 flex items-center gap-2"><i data-lucide="history" class="w-4 h-4 text-purple-700"></i> Riwayat Pendidikan & Kelas Siswa</h4>
                             <div class="space-y-2.5" id="riwayatPendidikanContainer"></div>
                         </div>
                     </div>
 
-                    <!-- Tab 2: Prestasi -->
                     <div id="tabContent-prestasi" class="tab-content hidden space-y-6">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-purple-50 pb-4">
                             <div>
-                                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
-                                    <i data-lucide="award" class="w-5 h-5 text-emerald-600"></i> Riwayat Prestasi & Pencapaian
-                                </h3>
+                                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2"><i data-lucide="award" class="w-5 h-5 text-emerald-600"></i> Riwayat Prestasi & Pencapaian</h3>
                                 <p class="text-xs text-slate-500 mt-0.5">Terkoneksi dengan Aplikasi Prestasi Siswa</p>
                             </div>
-                            <a href="https://alankoesumah.github.io/prestasi_siswa/" target="_blank" class="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-3.5 py-2 rounded-xl font-semibold transition flex items-center gap-1.5 w-fit">
-                                Buka App Prestasi Siswa <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                            </a>
+                            <a href="https://alankoesumah.github.io/prestasi_siswa/" target="_blank" rel="noopener" class="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-3.5 py-2 rounded-xl font-semibold transition flex items-center gap-1.5 w-fit">Buka App Prestasi Siswa <i data-lucide="external-link" class="w-3.5 h-3.5"></i></a>
                         </div>
                         <div id="prestasiListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                     </div>
 
-                    <!-- Tab 3: Insiden -->
                     <div id="tabContent-insiden" class="tab-content hidden space-y-6">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-purple-50 pb-4">
                             <div>
-                                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
-                                    <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600"></i> Jurnal Peristiwa & Catatan Insiden
-                                </h3>
+                                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2"><i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600"></i> Jurnal Peristiwa & Catatan Insiden</h3>
                                 <p class="text-xs text-slate-500 mt-0.5">Terkoneksi dengan Aplikasi Jurnal Peristiwa (student_id = NIS)</p>
                             </div>
-                            <a href="https://jurnalperistiwa.netlify.app/" target="_blank" class="text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 px-3.5 py-2 rounded-xl font-semibold transition flex items-center gap-1.5 w-fit">
-                                Buka App Jurnal Peristiwa <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                            </a>
+                            <a href="https://jurnalperistiwa.netlify.app/" target="_blank" rel="noopener" class="text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 px-3.5 py-2 rounded-xl font-semibold transition flex items-center gap-1.5 w-fit">Buka App Jurnal Peristiwa <i data-lucide="external-link" class="w-3.5 h-3.5"></i></a>
                         </div>
                         <div id="insidenListContainer" class="space-y-4"></div>
                     </div>
 
-                    <!-- Tab 4: Bacaan Buku -->
                     <div id="tabContent-bacaan" class="tab-content hidden space-y-6">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-purple-50 pb-4">
                             <div>
-                                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
-                                    <i data-lucide="book-open" class="w-5 h-5 text-purple-700"></i> Aktivitas Membaca & Literasi
-                                </h3>
+                                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2"><i data-lucide="book-open" class="w-5 h-5 text-purple-700"></i> Aktivitas Membaca & Literasi</h3>
                                 <p class="text-xs text-slate-500 mt-0.5">Terkoneksi dengan Aplikasi Daftar Bacaan Siswa</p>
                             </div>
-                            <a href="https://alankoesumah.github.io/Daftar_Bacaan_Siswa/" target="_blank" class="text-xs bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 px-3.5 py-2 rounded-xl font-semibold transition flex items-center gap-1.5 w-fit">
-                                Buka App Daftar Bacaan <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                            </a>
+                            <a href="https://alankoesumah.github.io/Daftar_Bacaan_Siswa/" target="_blank" rel="noopener" class="text-xs bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 px-3.5 py-2 rounded-xl font-semibold transition flex items-center gap-1.5 w-fit">Buka App Daftar Bacaan <i data-lucide="external-link" class="w-3.5 h-3.5"></i></a>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="bg-gradient-to-br from-purple-50 to-[#f3edf7] border border-purple-100 p-5 rounded-2xl flex items-center justify-between">
-                                <div>
-                                    <p class="text-xs font-bold text-purple-800 uppercase tracking-wider">Total Buku Selesai</p>
-                                    <h4 id="summaryTotalBuku" class="text-2xl font-black text-slate-800 mt-1">0 Buku</h4>
-                                </div>
+                                <div><p class="text-xs font-bold text-purple-800 uppercase tracking-wider">Total Buku Selesai</p><h4 id="summaryTotalBuku" class="text-2xl font-black text-slate-800 mt-1">0 Buku</h4></div>
                                 <div class="bg-purple-700 text-white p-3 rounded-xl"><i data-lucide="book" class="w-6 h-6"></i></div>
                             </div>
                             <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 p-5 rounded-2xl flex items-center justify-between">
-                                <div>
-                                    <p class="text-xs font-bold text-emerald-700 uppercase tracking-wider">Total Poin Literasi</p>
-                                    <h4 id="summaryTotalPoin" class="text-2xl font-black text-slate-800 mt-1">0 Poin</h4>
-                                </div>
+                                <div><p class="text-xs font-bold text-emerald-700 uppercase tracking-wider">Total Poin Literasi</p><h4 id="summaryTotalPoin" class="text-2xl font-black text-slate-800 mt-1">0 Poin</h4></div>
                                 <div class="bg-emerald-600 text-white p-3 rounded-xl"><i data-lucide="star" class="w-6 h-6"></i></div>
                             </div>
                         </div>
                         <div class="overflow-x-auto border border-purple-100 rounded-2xl">
                             <table class="w-full text-left text-sm">
                                 <thead class="bg-[#f3edf7] text-purple-950 text-xs font-bold uppercase tracking-wider border-b border-purple-200">
-                                    <tr>
-                                        <th class="px-4 py-3">Tanggal</th>
-                                        <th class="px-4 py-3">Judul Buku</th>
-                                        <th class="px-4 py-3">Level</th>
-                                        <th class="px-4 py-3">Poin</th>
-                                    </tr>
+                                    <tr><th class="px-4 py-3">Tanggal</th><th class="px-4 py-3">Judul Buku</th><th class="px-4 py-3">Level</th><th class="px-4 py-3">Poin</th></tr>
                                 </thead>
                                 <tbody id="bacaanTableBody" class="divide-y divide-purple-50"></tbody>
                             </table>
@@ -424,63 +279,44 @@
                 </div>
             </div>
 
-            <!-- VIEW 5: GLOBAL PRESTASI -->
+            <!-- VIEW 5: PRESTASI GLOBAL -->
             <div id="viewGlobalPrestasi" class="hidden space-y-6">
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div>
-                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                            <i data-lucide="award" class="w-6 h-6 text-emerald-600"></i> Rekapitulasi Prestasi Siswa
-                        </h2>
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="award" class="w-6 h-6 text-emerald-600"></i> Rekapitulasi Prestasi Siswa</h2>
                         <p class="text-xs text-slate-500 mt-0.5">Seluruh prestasi dan pencapaian kompetisi siswa Tunas Global.</p>
                     </div>
-                    <a href="https://alankoesumah.github.io/prestasi_siswa/" target="_blank" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-semibold transition flex items-center gap-2">
-                        Buka App Prestasi Siswa <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                    </a>
+                    <a href="https://alankoesumah.github.io/prestasi_siswa/" target="_blank" rel="noopener" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-semibold transition flex items-center gap-2">Buka App Prestasi Siswa <i data-lucide="external-link" class="w-3.5 h-3.5"></i></a>
                 </div>
                 <div id="globalPrestasiGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
             </div>
 
-            <!-- VIEW 6: GLOBAL INSIDEN -->
+            <!-- VIEW 6: INSIDEN GLOBAL -->
             <div id="viewGlobalInsiden" class="hidden space-y-6">
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div>
-                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                            <i data-lucide="alert-triangle" class="w-6 h-6 text-amber-600"></i> Jurnal Peristiwa Sekolah
-                        </h2>
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="alert-triangle" class="w-6 h-6 text-amber-600"></i> Jurnal Peristiwa Sekolah</h2>
                         <p class="text-xs text-slate-500 mt-0.5">Catatan insiden, pembinaan, dan peristiwa siswa terintegrasi.</p>
                     </div>
-                    <a href="https://jurnalperistiwa.netlify.app/" target="_blank" class="text-xs bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-xl font-semibold transition flex items-center gap-2">
-                        Buka App Jurnal Peristiwa <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                    </a>
+                    <a href="https://jurnalperistiwa.netlify.app/" target="_blank" rel="noopener" class="text-xs bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-xl font-semibold transition flex items-center gap-2">Buka App Jurnal Peristiwa <i data-lucide="external-link" class="w-3.5 h-3.5"></i></a>
                 </div>
                 <div id="globalInsidenList" class="space-y-4"></div>
             </div>
 
-            <!-- VIEW 7: GLOBAL BACAAN -->
+            <!-- VIEW 7: BACAAN GLOBAL -->
             <div id="viewGlobalBacaan" class="hidden space-y-6">
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div>
-                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                            <i data-lucide="book-open" class="w-6 h-6 text-purple-700"></i> Log Aktivitas Bacaan Buku
-                        </h2>
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="book-open" class="w-6 h-6 text-purple-700"></i> Log Aktivitas Bacaan Buku</h2>
                         <p class="text-xs text-slate-500 mt-0.5">Daftar buku yang telah dibaca oleh seluruh siswa.</p>
                     </div>
-                    <a href="https://alankoesumah.github.io/Daftar_Bacaan_Siswa/" target="_blank" class="text-xs bg-[#735c82] hover:bg-[#5e496b] text-white px-4 py-2.5 rounded-xl font-semibold transition flex items-center gap-2">
-                        Buka App Daftar Bacaan <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                    </a>
+                    <a href="https://alankoesumah.github.io/Daftar_Bacaan_Siswa/" target="_blank" rel="noopener" class="text-xs bg-[#735c82] hover:bg-[#5e496b] text-white px-4 py-2.5 rounded-xl font-semibold transition flex items-center gap-2">Buka App Daftar Bacaan <i data-lucide="external-link" class="w-3.5 h-3.5"></i></a>
                 </div>
                 <div class="bg-white rounded-3xl shadow-sm border border-purple-100 overflow-hidden p-6">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm">
                             <thead class="bg-[#f3edf7] text-purple-950 text-xs font-bold uppercase tracking-wider border-b border-purple-200">
-                                <tr>
-                                    <th class="px-4 py-3">Tanggal</th>
-                                    <th class="px-4 py-3">Nama Siswa</th>
-                                    <th class="px-4 py-3">Kelas</th>
-                                    <th class="px-4 py-3">Judul Buku</th>
-                                    <th class="px-4 py-3">Level</th>
-                                    <th class="px-4 py-3">Poin</th>
-                                </tr>
+                                <tr><th class="px-4 py-3">Tanggal</th><th class="px-4 py-3">Nama Siswa</th><th class="px-4 py-3">Kelas</th><th class="px-4 py-3">Judul Buku</th><th class="px-4 py-3">Level</th><th class="px-4 py-3">Poin</th></tr>
                             </thead>
                             <tbody id="globalBacaanTableBody" class="divide-y divide-purple-50"></tbody>
                         </table>
@@ -491,22 +327,14 @@
             <!-- VIEW 8: REKAPITULASI -->
             <div id="viewRekapitulasi" class="hidden space-y-6">
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100">
-                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                        <i data-lucide="bar-chart-3" class="w-6 h-6 text-purple-700"></i> Rekapitulasi Data Siswa per Kelas
-                    </h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Ringkasan statistik perbandingan antar kelas untuk Tahun Pelajaran <span class="current-year-text">2026/2027</span></p>
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-6 h-6 text-purple-700"></i> Rekapitulasi Data Siswa per Kelas</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Ringkasan perbandingan antar kelas untuk Tahun Pelajaran <span class="current-year-text">2026/2027</span></p>
                 </div>
                 <div class="bg-white rounded-3xl shadow-sm border border-purple-100 overflow-hidden p-6">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm">
                             <thead class="bg-[#f3edf7] text-purple-950 text-xs font-bold uppercase tracking-wider border-b border-purple-200">
-                                <tr>
-                                    <th class="px-6 py-3.5">Kelas</th>
-                                    <th class="px-6 py-3.5 text-center">Jumlah Siswa</th>
-                                    <th class="px-6 py-3.5 text-center">Total Prestasi</th>
-                                    <th class="px-6 py-3.5 text-center">Total Buku Dibaca</th>
-                                    <th class="px-6 py-3.5 text-right">Aksi</th>
-                                </tr>
+                                <tr><th class="px-6 py-3.5">Kelas</th><th class="px-6 py-3.5 text-center">Jumlah Siswa</th><th class="px-6 py-3.5 text-center">Total Prestasi</th><th class="px-6 py-3.5 text-center">Total Buku Dibaca</th><th class="px-6 py-3.5 text-right">Aksi</th></tr>
                             </thead>
                             <tbody id="rekapitulasiTableBody" class="divide-y divide-purple-50"></tbody>
                         </table>
@@ -517,86 +345,44 @@
             <!-- VIEW 9: STATISTIK -->
             <div id="viewStatistik" class="hidden space-y-6">
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100">
-                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                        <i data-lucide="trending-up" class="w-6 h-6 text-teal-600"></i> Statistik & Metrik Akademik
-                    </h2>
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="trending-up" class="w-6 h-6 text-teal-600"></i> Statistik & Metrik Akademik</h2>
                     <p class="text-xs text-slate-500 mt-0.5">Analisis performa dan keaktifan siswa Tunas Global.</p>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100 flex flex-col justify-between">
-                        <span class="text-xs font-bold text-slate-400 uppercase">Total Siswa Terdaftar</span>
-                        <h3 id="statCardSiswa" class="text-3xl font-black text-purple-700 mt-4">0</h3>
-                        <p class="text-[11px] text-slate-500 mt-2">Seluruh rombel aktif</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100 flex flex-col justify-between">
-                        <span class="text-xs font-bold text-slate-400 uppercase">Total Prestasi Sekolah</span>
-                        <h3 id="statCardPrestasi" class="text-3xl font-black text-emerald-600 mt-4">0</h3>
-                        <p class="text-[11px] text-slate-500 mt-2">Medali & kejuaraan</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100 flex flex-col justify-between">
-                        <span class="text-xs font-bold text-slate-400 uppercase">Total Insiden / Jurnal</span>
-                        <h3 id="statCardInsiden" class="text-3xl font-black text-amber-600 mt-4">0</h3>
-                        <p class="text-[11px] text-slate-500 mt-2">Catatan pemantauan</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100 flex flex-col justify-between">
-                        <span class="text-xs font-bold text-slate-400 uppercase">Buku Selesai Dibaca</span>
-                        <h3 id="statCardBacaan" class="text-3xl font-black text-purple-600 mt-4">0</h3>
-                        <p class="text-[11px] text-slate-500 mt-2">Total literasi siswa</p>
-                    </div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100 flex flex-col justify-between"><span class="text-xs font-bold text-slate-400 uppercase">Siswa Tahun Ini</span><h3 id="statCardSiswa" class="text-3xl font-black text-purple-700 mt-4">0</h3><p class="text-[11px] text-slate-500 mt-2">Seluruh rombel aktif</p></div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100 flex flex-col justify-between"><span class="text-xs font-bold text-slate-400 uppercase">Total Prestasi Sekolah</span><h3 id="statCardPrestasi" class="text-3xl font-black text-emerald-600 mt-4">0</h3><p class="text-[11px] text-slate-500 mt-2">Medali & kejuaraan</p></div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100 flex flex-col justify-between"><span class="text-xs font-bold text-slate-400 uppercase">Total Insiden / Jurnal</span><h3 id="statCardInsiden" class="text-3xl font-black text-amber-600 mt-4">0</h3><p class="text-[11px] text-slate-500 mt-2">Catatan pemantauan</p></div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100 flex flex-col justify-between"><span class="text-xs font-bold text-slate-400 uppercase">Buku Selesai Dibaca</span><h3 id="statCardBacaan" class="text-3xl font-black text-purple-600 mt-4">0</h3><p class="text-[11px] text-slate-500 mt-2">Total literasi siswa</p></div>
                 </div>
             </div>
 
             <!-- VIEW 10: PENGATURAN -->
             <div id="viewPengaturan" class="hidden space-y-6">
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100">
-                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                        <i data-lucide="settings" class="w-6 h-6 text-slate-700"></i> Pengaturan Sumber Data & Tema Aplikasi
-                    </h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Konfigurasi 4 endpoint CSV Google Sheets dan tema warna aplikasi.</p>
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="settings" class="w-6 h-6 text-slate-700"></i> Pengaturan Sumber Data & Tema Aplikasi</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Alamat 4 Google Sheet dan tema warna aplikasi. Nama tab diatur di bagian SHEET_TABS pada kode.</p>
                 </div>
                 <div class="bg-white rounded-3xl shadow-sm border border-purple-100 p-6 sm:p-8 space-y-6">
                     <div class="space-y-4">
-                        <h3 class="font-bold text-slate-800 text-sm">URL Endpoint Google Sheets (CSV Export)</h3>
+                        <h3 class="font-bold text-slate-800 text-sm">Alamat Google Sheets</h3>
                         <div class="space-y-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">1. Database Siswa (Biodata)</label>
-                                <input type="text" id="settingUrlBiodata" class="w-full bg-[#fbf9fd] border border-purple-200 rounded-xl px-4 py-2 text-xs font-mono text-slate-700" value="https://docs.google.com/spreadsheets/d/1HIld6F9AM9LMKdZnWClrH3d8avQ3_4BXoTYZn-22Oqc/export?format=csv">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">2. Prestasi Siswa</label>
-                                <input type="text" id="settingUrlPrestasi" class="w-full bg-[#fbf9fd] border border-purple-200 rounded-xl px-4 py-2 text-xs font-mono text-slate-700" value="https://docs.google.com/spreadsheets/d/1XBOIT08bXEK8Qo96isQjYFzQZnyG-ZIDjoE2Xv0y3n8/export?format=csv">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">3. Jurnal Peristiwa (Insiden)</label>
-                                <input type="text" id="settingUrlInsiden" class="w-full bg-[#fbf9fd] border border-purple-200 rounded-xl px-4 py-2 text-xs font-mono text-slate-700" value="https://docs.google.com/spreadsheets/d/1XJzYHzgJRyx72IQcj36lh0Y0jAhoK_WGCFCgtibzfuY/export?format=csv">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">4. Daftar Bacaan Buku</label>
-                                <input type="text" id="settingUrlBacaan" class="w-full bg-[#fbf9fd] border border-purple-200 rounded-xl px-4 py-2 text-xs font-mono text-slate-700" value="https://docs.google.com/spreadsheets/d/1imf1WCO2uzXKFnVxsih6oDu142Bk7RK6ErzfsPfnVPU/export?format=csv">
-                            </div>
+                            <div><label class="block text-xs font-semibold text-slate-600 mb-1">1. Database Siswa (Biodata + Riwayat_Kelas)</label><input type="text" id="settingUrlBiodata" class="w-full bg-[#fbf9fd] border border-purple-200 rounded-xl px-4 py-2 text-xs font-mono text-slate-700"></div>
+                            <div><label class="block text-xs font-semibold text-slate-600 mb-1">2. Prestasi Siswa</label><input type="text" id="settingUrlPrestasi" class="w-full bg-[#fbf9fd] border border-purple-200 rounded-xl px-4 py-2 text-xs font-mono text-slate-700"></div>
+                            <div><label class="block text-xs font-semibold text-slate-600 mb-1">3. Jurnal Peristiwa (Peristiwa + Siswa_terlibat)</label><input type="text" id="settingUrlInsiden" class="w-full bg-[#fbf9fd] border border-purple-200 rounded-xl px-4 py-2 text-xs font-mono text-slate-700"></div>
+                            <div><label class="block text-xs font-semibold text-slate-600 mb-1">4. Daftar Bacaan (Master_Siswa + Log_Baca)</label><input type="text" id="settingUrlBacaan" class="w-full bg-[#fbf9fd] border border-purple-200 rounded-xl px-4 py-2 text-xs font-mono text-slate-700"></div>
                         </div>
                     </div>
-
-                    <!-- Theme Color Picker Section -->
                     <div class="space-y-3 pt-4 border-t border-purple-100">
                         <h3 class="font-bold text-slate-800 text-sm">Tema Warna Aplikasi (HEX)</h3>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Pilih Warna Utama (Soft Lilac / Custom HEX)</label>
-                            <div class="flex items-center gap-3">
-                                <input type="color" id="settingThemeColor" value="#564563" class="w-12 h-10 rounded-xl cursor-pointer border border-purple-200 p-1 bg-[#fbf9fd]" onchange="document.getElementById('settingHexInput').value = this.value">
-                                <input type="text" id="settingHexInput" value="#564563" class="w-32 bg-[#fbf9fd] border border-purple-200 rounded-xl px-4 py-2 text-xs font-mono text-slate-700 uppercase" oninput="document.getElementById('settingThemeColor').value = this.value">
-                                <span class="text-xs text-slate-500">Menyesuaikan sidebar, header, dan elemen navigasi.</span>
-                            </div>
+                        <div class="flex items-center gap-3">
+                            <input type="color" id="settingThemeColor" value="#564563" class="w-12 h-10 rounded-xl cursor-pointer border border-purple-200 p-1 bg-[#fbf9fd]" onchange="document.getElementById('settingHexInput').value = this.value">
+                            <input type="text" id="settingHexInput" value="#564563" class="w-32 bg-[#fbf9fd] border border-purple-200 rounded-xl px-4 py-2 text-xs font-mono text-slate-700 uppercase" oninput="if(/^#[0-9a-f]{6}$/i.test(this.value)) document.getElementById('settingThemeColor').value = this.value">
+                            <span class="text-xs text-slate-500">Menyesuaikan sidebar, header, dan elemen navigasi.</span>
                         </div>
                     </div>
-
-                    <div class="pt-4 border-t border-purple-100 flex items-center justify-between">
-                        <div class="text-xs text-slate-500">
-                            Pastikan sheet diset <strong>"Anyone with the link can view"</strong>.
-                        </div>
-                        <button onclick="saveAndReloadSettings()" class="bg-[#564563] hover:bg-[#685376] text-white px-5 py-2.5 rounded-xl font-semibold text-xs transition shadow-sm">
-                            Simpan & Terapkan Perubahan
-                        </button>
+                    <div class="pt-4 border-t border-purple-100 flex items-center justify-between gap-3">
+                        <div class="text-xs text-slate-500">Pastikan setiap sheet diset <strong>"Anyone with the link can view"</strong>.</div>
+                        <button onclick="saveAndReloadSettings()" class="bg-[#564563] hover:bg-[#685376] text-white px-5 py-2.5 rounded-xl font-semibold text-xs transition shadow-sm whitespace-nowrap">Simpan & Terapkan Perubahan</button>
                     </div>
                 </div>
             </div>
@@ -604,914 +390,509 @@
         </main>
     </div>
 
-    <!-- Dynamic Theme Styling Injection -->
-    <style id="dynamicThemeStyle">
-        /* Default Soft Lilac Theme */
-        :root {
-            --theme-color: #564563;
-            --theme-sidebar: #4a3d54;
-            --theme-header: #564563;
-        }
-    </style>
+    <style id="dynamicThemeStyle"></style>
 
     <script>
-        let SHEET_URLS = {
-            biodata: 'https://docs.google.com/spreadsheets/d/1HIld6F9AM9LMKdZnWClrH3d8avQ3_4BXoTYZn-22Oqc/export?format=csv',
-            prestasi: 'https://docs.google.com/spreadsheets/d/1XBOIT08bXEK8Qo96isQjYFzQZnyG-ZIDjoE2Xv0y3n8/export?format=csv',
-            insiden: 'https://docs.google.com/spreadsheets/d/1XJzYHzgJRyx72IQcj36lh0Y0jAhoK_WGCFCgtibzfuY/export?format=csv',
-            bacaan: 'https://docs.google.com/spreadsheets/d/1imf1WCO2uzXKFnVxsih6oDu142Bk7RK6ErzfsPfnVPU/export?format=csv'
-        };
-
-        let appData = { biodata: [], prestasi: [], insiden: [], bacaan: [] };
-        let currentYear = "2026/2027";
-        let activeClass = null;
-        let activeStudentNIS = null;
-
-        window.onload = async function() {
-            lucide.createIcons();
-            loadSavedTheme();
-            await loadData();
-        };
-
-        function applyTheme(hex) {
-            if (!hex) hex = "#564563";
-            const sidebarHex = adjustColorBrightness(hex, -20);
-            const styleEl = document.getElementById('dynamicThemeStyle');
-            if (styleEl) {
-                styleEl.innerHTML = `
-                    aside#sidebar { background-color: ${sidebarHex} !important; border-color: ${adjustColorBrightness(hex, -10)} !important; }
-                    header#mainHeader { background-color: ${hex} !important; border-color: ${adjustColorBrightness(hex, 10)} !important; }
-                    #heroBanner { background: linear-gradient(to right, ${hex}, ${adjustColorBrightness(hex, 20)}, ${adjustColorBrightness(hex, 35)}) !important; }
-                    #profileHeaderCard { background: linear-gradient(to right, ${hex}, ${adjustColorBrightness(hex, 25)}) !important; }
-                `;
-            }
-            localStorage.setItem('appThemeColor', hex);
-        }
-
-        function adjustColorBrightness(hex, percent) {
-            let num = parseInt(hex.replace("#",""), 16);
-            let amt = Math.round(2.55 * percent);
-            let R = (num >> 16) + amt;
-            let G = (num >> 8 & 0x00FF) + amt;
-            let B = (num & 0x0000FF) + amt;
-            return "#" + (0x1000000 + (R<255?R<0?0:R:255)*0x10000 + (G<255?G<0?0:G:255)*0x100 + (B<255?B<0?0:B:255)).toString(16).slice(1);
-        }
-
-        function loadSavedTheme() {
-            const saved = localStorage.getItem('appThemeColor') || '#564563';
-            document.getElementById('settingThemeColor').value = saved;
-            document.getElementById('settingHexInput').value = saved;
-            applyTheme(saved);
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMessage').innerText = message;
-            toast.classList.remove('hidden');
-            setTimeout(() => { toast.classList.add('hidden'); }, 3500);
-        }
-
-        function toggleMobileSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('-translate-x-full');
-        }
-
-        async function loadData() {
-            showToast("Menghubungkan ke 4 Google Sheets...");
-            try {
-                const [bRes, pRes, iRes, rRes] = await Promise.all([
-                    fetchCSV(SHEET_URLS.biodata),
-                    fetchCSV(SHEET_URLS.prestasi),
-                    fetchCSV(SHEET_URLS.insiden),
-                    fetchCSV(SHEET_URLS.bacaan)
-                ]);
-
-                appData.biodata = normalizeBiodata(bRes);
-                appData.prestasi = normalizePrestasi(pRes);
-                appData.insiden = normalizeInsiden(iRes);
-                appData.bacaan = normalizeBacaan(rRes);
-
-                updateConnectionBanner(true, "Berhasil terhubung ke 4 Google Sheets Tunas Global!");
-                showToast("Data Google Sheets berhasil dimuat!");
-            } catch (e) {
-                console.warn("Gagal fetch live sheets:", e);
-                updateConnectionBanner(false, "Gagal koneksi live (" + e.message + "). Pastikan sheet diset 'Anyone with the link can view'.");
-                showToast("Gagal memuat Google Sheets. Periksa koneksi.");
-            }
-
-            renderDashboard();
-            renderDirectoryStudents();
-            renderGlobalPrestasi();
-            renderGlobalInsiden();
-            renderGlobalBacaan();
-            renderRekapitulasi();
-            renderStatistik();
-        }
-
-        function refreshData() { loadData(); }
-
-        function updateConnectionBanner(isSuccess, message) {
-            const banner = document.getElementById('connectionStatusBanner');
-            document.getElementById('connectionStatusText').innerText = message;
-            if (isSuccess) {
-                banner.className = "bg-emerald-50 border border-emerald-200 p-4 rounded-2xl flex items-center justify-between text-xs text-emerald-900 no-print shadow-sm";
-                banner.querySelector('.bg-purple-600').className = "bg-emerald-600 text-white p-2 rounded-xl shadow-sm";
-            }
-        }
-
-        function normalizeBiodata(rows) {
-            if (!Array.isArray(rows)) return [];
-            return rows.map(r => {
-                let clean = {};
-                Object.keys(r).forEach(k => clean[k.trim().toLowerCase().replace(/[\s\.\-]+/g, '_')] = r[k]);
-                return {
-                    nis: String(clean.nis || clean.nipd || clean.nomor_induk || clean.student_id || '').trim(),
-                    nama: String(clean.nama_lengkap || clean.nama || clean.namasiswa || '').trim(),
-                    panggilan: String(clean.panggilan || clean.nama_panggilan || '').trim(),
-                    kelas: String(clean.kelas || clean.rombel || '6 Einstein').trim(),
-                    tahun_ajaran: String(clean.tahun_ajaran || clean.tahun || '2026/2027').trim(),
-                    nisn: String(clean.nisn || '-').trim(),
-                    jk: String(clean.jenis_kelamin || clean.jk || '-').trim(),
-                    ttl: String(clean.tempat_tanggal_lahir || clean.ttl || '-').trim(),
-                    agama: String(clean.agama || '-').trim(),
-                    alamat: String(clean.alamat || '-').trim(),
-                    telepon: String(clean.telepon || clean.no_telepon || clean.hp || '-').trim(),
-                    email: String(clean.email || '-').trim(),
-                    wali: String(clean.wali || clean.nama_orang_tua || clean.orang_tua || '-').trim(),
-                    pekerjaan_wali: String(clean.pekerjaan_wali || clean.pekerjaan || '-').trim()
-                };
-            }).filter(x => x.nis !== '');
-        }
-
-        function normalizePrestasi(rows) {
-            if (!Array.isArray(rows)) return [];
-            return rows.map(r => {
-                let clean = {};
-                Object.keys(r).forEach(k => clean[k.trim().toLowerCase().replace(/[\s\.\-]+/g, '_')] = r[k]);
-                return {
-                    id: String(clean.id || Math.random()).trim(),
-                    nis: String(clean.nis || clean.nomor_induk || '').trim(),
-                    namaSiswa: String(clean.namasiswa || clean.nama || '').trim(),
-                    pencapaian: String(clean.pencapaian || clean.prestasi || '').trim(),
-                    kategori: String(clean.kategori || 'Umum').trim(),
-                    namaLomba: String(clean.namalomba || clean.lomba || clean.kegiatan || '').trim(),
-                    penyelenggara: String(clean.penyelenggara || '-').trim(),
-                    tanggal: String(clean.tanggal || '-').trim(),
-                    tempat: String(clean.tempat || '-').trim(),
-                    tahunPelajaran: String(clean.tahunpelajaran || clean.tahun || '2026/2027').trim(),
-                    kelas: String(clean.kelas || '').trim(),
-                    foto: String(clean.foto || clean.fotopreview || 'https://placehold.co/400x300/684e7d/ffffff?text=Prestasi+Siswa').trim()
-                };
-            }).filter(x => x.nis !== '');
-        }
-
-        function normalizeInsiden(rows) {
-            if (!Array.isArray(rows)) return [];
-            return rows.map(r => {
-                let clean = {};
-                Object.keys(r).forEach(k => clean[k.trim().toLowerCase().replace(/[\s\.\-]+/g, '_')] = r[k]);
-                return {
-                    incident_id: String(clean.incident_id || clean.id || '').trim(),
-                    student_id: String(clean.student_id || clean.nis || clean.nomor_induk || '').trim(),
-                    nama: String(clean.nama_siswa || clean.nama || '').trim(),
-                    kelas: String(clean.kelas || '').trim(),
-                    peran: String(clean.peran || 'Siswa Terlibat').trim(),
-                    tanggal: String(clean.tanggal || '').trim(),
-                    jenis: String(clean.jenis || clean.kategori || 'Peristiwa').trim(),
-                    catatan: String(clean.catatan || clean.keterangan || '').trim(),
-                    tindakan: String(clean.tindakan || '-').trim()
-                };
-            }).filter(x => x.student_id !== '');
-        }
-
-        function normalizeBacaan(rows) {
-            if (!Array.isArray(rows)) return [];
-            return rows.map(r => {
-                let clean = {};
-                Object.keys(r).forEach(k => clean[k.trim().toLowerCase().replace(/[\s\.\-]+/g, '_')] = r[k]);
-                return {
-                    tanggal: String(clean.tanggal || '-').trim(),
-                    nis: String(clean.nis || clean.nomor_induk || '').trim(),
-                    nama_lengkap: String(clean.nama_lengkap || clean.nama || '').trim(),
-                    kelas: String(clean.kelas || '').trim(),
-                    judul_buku: String(clean.judul_buku || clean.judul || clean.buku || '').trim(),
-                    level: String(clean.level || 'Level 1').trim(),
-                    poin: String(clean.poin || '1').trim()
-                };
-            }).filter(x => x.nis !== '');
-        }
-
-        function changeYear(year) {
-            currentYear = year;
-            document.getElementById('heroYear').innerText = year;
-            document.getElementById('yearLabelDisplay').innerText = year;
-            document.querySelectorAll('.current-year-text').forEach(el => el.innerText = year);
-            loadData();
-        }
-
-        function switchSidebarView(viewId) {
-            const views = ['viewDashboard', 'viewDataSiswa', 'viewStudentList', 'viewStudentProfile', 'viewGlobalPrestasi', 'viewGlobalInsiden', 'viewGlobalBacaan', 'viewRekapitulasi', 'viewStatistik', 'viewPengaturan'];
-            views.forEach(v => {
-                const el = document.getElementById(v);
-                if (el) el.classList.add('hidden');
-            });
-
-            document.querySelectorAll('.sidebar-link').forEach(btn => {
-                btn.className = "sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition hover:bg-white/10 text-purple-200 hover:text-white text-xs font-semibold";
-            });
-
-            const activeBtn = document.getElementById(`nav-${viewId}`);
-            if (activeBtn) {
-                activeBtn.className = "sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition bg-white/20 text-white shadow-sm text-xs font-semibold";
-            }
-
-            if (viewId === 'dashboard') {
-                document.getElementById('viewDashboard').classList.remove('hidden');
-                document.getElementById('breadcrumbClassContainer').classList.add('hidden');
-                document.getElementById('breadcrumbStudentContainer').classList.add('hidden');
-                renderDashboard();
-            } else if (viewId === 'datasiswa') {
-                document.getElementById('viewDataSiswa').classList.remove('hidden');
-                renderDirectoryStudents();
-            } else if (viewId === 'prestasi') {
-                document.getElementById('viewGlobalPrestasi').classList.remove('hidden');
-                renderGlobalPrestasi();
-            } else if (viewId === 'insiden') {
-                document.getElementById('viewGlobalInsiden').classList.remove('hidden');
-                renderGlobalInsiden();
-            } else if (viewId === 'bacaan') {
-                document.getElementById('viewGlobalBacaan').classList.remove('hidden');
-                renderGlobalBacaan();
-            } else if (viewId === 'rekapitulasi') {
-                document.getElementById('viewRekapitulasi').classList.remove('hidden');
-                renderRekapitulasi();
-            } else if (viewId === 'statistik') {
-                document.getElementById('viewStatistik').classList.remove('hidden');
-                renderStatistik();
-            } else if (viewId === 'pengaturan') {
-                document.getElementById('viewPengaturan').classList.remove('hidden');
-            }
-
-            if (window.innerWidth < 1024) {
-                document.getElementById('sidebar').classList.add('-translate-x-full');
-            }
-        }
-
-        function renderDashboard() {
-            const container = document.getElementById('classListContainer');
-            container.innerHTML = '';
-            document.getElementById('statTotalSiswa').innerText = appData.biodata.length;
-
-            const classMap = {};
-            appData.biodata.forEach(s => {
-                const cls = s.kelas || '6 Einstein';
-                if (!classMap[cls]) classMap[cls] = [];
-                classMap[cls].push(s);
-            });
-
-            const classes = Object.keys(classMap).sort();
-            document.getElementById('statTotalKelas').innerText = classes.length;
-
-            if (classes.length === 0) {
-                container.innerHTML = `<div class="col-span-3 text-center py-12 text-slate-400">Belum ada data kelas atau sheet kosong.</div>`;
-                return;
-            }
-
-            classes.forEach(cls => {
-                const count = classMap[cls].length;
-                const card = document.createElement('div');
-                card.className = "bg-white p-6 rounded-3xl shadow-sm border border-purple-100 hover:shadow-md hover:border-purple-300 transition cursor-pointer flex flex-col justify-between group";
-                card.onclick = () => selectClass(cls);
-
-                card.innerHTML = `
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 bg-purple-100 text-purple-800 rounded-2xl flex items-center justify-center font-bold text-lg group-hover:bg-purple-700 group-hover:text-white transition shadow-inner">🏫</div>
-                            <span class="text-xs bg-[#f3edf7] text-purple-900 px-3 py-1 rounded-full font-semibold">${count} siswa</span>
-                        </div>
-                        <h4 class="font-bold text-slate-800 text-lg group-hover:text-purple-700 transition">${cls}</h4>
-                        <p class="text-xs text-slate-500 mt-1">SD Nasional Plus Tunas Global</p>
-                    </div>
-                    <div class="mt-6 pt-4 border-t border-purple-50 flex items-center justify-between text-xs font-semibold text-purple-700">
-                        <span>Lihat Daftar Siswa</span>
-                        <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition"></i>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-            lucide.createIcons();
-        }
-
-        function renderDirectoryStudents(filter = '') {
-            const tbody = document.getElementById('directoryTableBody');
-            tbody.innerHTML = '';
-            const list = appData.biodata.filter(s => s.nama.toLowerCase().includes(filter.toLowerCase()) || s.nis.includes(filter));
-
-            if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-slate-400">Tidak ada data siswa ditemukan.</td></tr>`;
-                return;
-            }
-
-            list.forEach(s => {
-                tbody.innerHTML += `
-                    <tr class="hover:bg-purple-50/50 transition cursor-pointer" onclick="selectStudent('${s.nis}')">
-                        <td class="px-6 py-4 font-mono font-bold text-purple-700">${s.nis}</td>
-                        <td class="px-6 py-4 font-bold text-slate-800">${s.nama}</td>
-                        <td class="px-6 py-4 text-slate-600">${s.kelas}</td>
-                        <td class="px-6 py-4 text-slate-600">${s.jk}</td>
-                        <td class="px-6 py-4 text-right">
-                            <button class="text-xs bg-purple-100 hover:bg-purple-200 text-purple-900 px-3 py-1.5 rounded-xl font-semibold transition">Profil Lengkap →</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function selectClass(className) {
-            activeClass = className;
-            document.getElementById('viewDashboard').classList.add('hidden');
-            document.getElementById('viewStudentList').classList.remove('hidden');
-
-            document.getElementById('breadcrumbClassContainer').classList.remove('hidden');
-            document.getElementById('breadcrumbClassContainer').classList.add('flex');
-            document.getElementById('breadcrumbClassText').innerText = className;
-            document.getElementById('breadcrumbStudentContainer').classList.add('hidden');
-
-            document.getElementById('currentClassName').innerText = `Kelas ${className}`;
-            document.getElementById('currentClassYear').innerText = currentYear;
-
-            renderClassStudents();
-        }
-
-        function renderClassStudents(searchFilter = '') {
-            const students = appData.biodata.filter(s => (s.kelas === activeClass) && (s.nama.toLowerCase().includes(searchFilter.toLowerCase()) || s.nis.includes(searchFilter)));
-            document.getElementById('currentClassCount').innerText = students.length;
-            const container = document.getElementById('classStudentGrid');
-            container.innerHTML = '';
-
-            if (students.length === 0) {
-                container.innerHTML = `<div class="col-span-3 text-center py-12 text-slate-400">Tidak ada siswa ditemukan di kelas ini.</div>`;
-                return;
-            }
-
-            students.forEach(student => {
-                const card = document.createElement('div');
-                card.className = "bg-white p-5 rounded-2xl shadow-sm border border-purple-100 hover:border-purple-300 hover:shadow-md transition cursor-pointer flex items-center justify-between";
-                card.onclick = () => selectStudent(student.nis);
-
-                card.innerHTML = `
-                    <div class="flex items-center space-x-4">
-                        <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-800 font-bold flex items-center justify-center text-base shadow-inner">${student.nama.charAt(0)}</div>
-                        <div>
-                            <h4 class="text-sm font-bold text-slate-800 leading-snug">${student.nama}</h4>
-                            <p class="text-xs text-slate-500 mt-0.5 font-mono">NIS/NIPD: <strong class="text-slate-700">${student.nis}</strong></p>
-                            <span class="inline-block mt-1.5 text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-semibold">Aktif • ${student.kelas}</span>
-                        </div>
-                    </div>
-                    <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
-                `;
-                container.appendChild(card);
-            });
-            lucide.createIcons();
-        }
-
-        function filterClassStudents(query) { renderClassStudents(query); }
-
-        function handleGlobalSearch(query) {
-            if (!query || query.trim().length < 2) return;
-            const match = appData.biodata.find(s => s.nama.toLowerCase().includes(query.toLowerCase()) || s.nis.includes(query));
-            if (match) selectStudent(match.nis);
-        }
-
-        function selectStudent(nis) {
-            activeStudentNIS = nis;
-            const student = appData.biodata.find(s => s.nis === nis);
-            if (!student) return;
-
-            ['viewDashboard', 'viewDataSiswa', 'viewStudentList', 'viewGlobalPrestasi', 'viewGlobalInsiden', 'viewGlobalBacaan', 'viewRekapitulasi', 'viewStatistik', 'viewPengaturan'].forEach(v => {
-                document.getElementById(v).classList.add('hidden');
-            });
-            document.getElementById('viewStudentProfile').classList.remove('hidden');
-
-            document.getElementById('breadcrumbClassContainer').classList.remove('hidden');
-            document.getElementById('breadcrumbClassContainer').classList.add('flex');
-            document.getElementById('breadcrumbClassText').innerText = student.kelas;
-            document.getElementById('breadcrumbStudentContainer').classList.remove('hidden');
-            document.getElementById('breadcrumbStudentContainer').classList.add('flex');
-            document.getElementById('breadcrumbStudentText').innerText = student.nama;
-
-            document.getElementById('profileName').innerText = student.nama;
-            document.getElementById('profileNIS').innerText = student.nis;
-            document.getElementById('profileClass').innerText = student.kelas;
-            document.getElementById('profileYear').innerText = student.tahun_ajaran || currentYear;
-            document.getElementById('profileAvatar').innerText = student.nama.charAt(0);
-
-            // Tab Biodata
-            const bioGrid = document.getElementById('biodataGridContainer');
-            bioGrid.innerHTML = `
-                <div class="bg-[#fbf9fd] p-4 rounded-2xl border border-purple-100"><span class="text-slate-400 block text-xs">Nama Lengkap</span><strong class="text-slate-800">${student.nama}</strong></div>
-                <div class="bg-[#fbf9fd] p-4 rounded-2xl border border-purple-100"><span class="text-slate-400 block text-xs">Nama Panggilan</span><strong class="text-slate-800">${student.panggilan || '-'}</strong></div>
-                <div class="bg-[#fbf9fd] p-4 rounded-2xl border border-purple-100"><span class="text-slate-400 block text-xs">Nomor Induk (NIS/NIPD)</span><strong class="text-purple-700 font-mono">${student.nis}</strong></div>
-                <div class="bg-[#fbf9fd] p-4 rounded-2xl border border-purple-100"><span class="text-slate-400 block text-xs">NISN</span><strong class="text-slate-800 font-mono">${student.nisn}</strong></div>
-                <div class="bg-[#fbf9fd] p-4 rounded-2xl border border-purple-100"><span class="text-slate-400 block text-xs">Kelas</span><strong class="text-slate-800">${student.kelas}</strong></div>
-                <div class="bg-[#fbf9fd] p-4 rounded-2xl border border-purple-100"><span class="text-slate-400 block text-xs">Jenis Kelamin</span><strong class="text-slate-800">${student.jk}</strong></div>
-                <div class="bg-[#fbf9fd] p-4 rounded-2xl border border-purple-100"><span class="text-slate-400 block text-xs">TTL</span><strong class="text-slate-800">${student.ttl}</strong></div>
-                <div class="bg-[#fbf9fd] p-4 rounded-2xl border border-purple-100"><span class="text-slate-400 block text-xs">Agama</span><strong class="text-slate-800">${student.agama}</strong></div>
-                <div class="bg-[#fbf9fd] p-4 rounded-2xl border border-purple-100"><span class="text-slate-400 block text-xs">Alamat</span><strong class="text-slate-800">${student.alamat}</strong></div>
-                <div class="bg-[#fbf9fd] p-4 rounded-2xl border border-purple-100"><span class="text-slate-400 block text-xs">Telepon</span><strong class="text-slate-800">${student.telepon}</strong></div>
-                <div class="bg-[#fbf9fd] p-4 rounded-2xl border border-purple-100"><span class="text-slate-400 block text-xs">Email</span><strong class="text-slate-800">${student.email}</strong></div>
-                <div class="bg-[#fbf9fd] p-4 rounded-2xl border border-purple-100"><span class="text-slate-400 block text-xs">Orang Tua / Wali</span><strong class="text-slate-800">${student.wali} (${student.pekerjaan_wali})</strong></div>
-            `;
-
-            document.getElementById('riwayatPendidikanContainer').innerHTML = `
-                <div class="flex items-center justify-between p-3.5 bg-purple-100/70 border border-purple-200 rounded-xl text-xs"><span class="font-bold text-purple-950">${currentYear}</span><span class="bg-purple-700 text-white px-2.5 py-1 rounded-lg font-semibold">${student.kelas} ← sedang dilihat</span></div>
-                <div class="flex items-center justify-between p-3.5 bg-[#fbf9fd] border border-purple-100 rounded-xl text-xs"><span class="font-medium text-slate-700">2025/2026</span><span class="text-slate-600">Kelas Sebelumnya</span></div>
-            `;
-
-            // Tab Prestasi
-            const studentPrestasi = appData.prestasi.filter(p => p.nis === nis);
-            document.getElementById('countPrestasi').innerText = studentPrestasi.length;
-            const prestasiContainer = document.getElementById('prestasiListContainer');
-            prestasiContainer.innerHTML = studentPrestasi.length === 0 ? `<div class="col-span-2 text-center py-8 text-slate-400 italic bg-[#fbf9fd] rounded-2xl">Belum ada catatan prestasi.</div>` : '';
-            studentPrestasi.forEach(p => {
-                prestasiContainer.innerHTML += `
-                    <div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden flex flex-col justify-between">
-                        <div class="h-40 bg-slate-100 relative"><img src="${p.foto}" alt="Foto" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x300/684e7d/ffffff?text=Prestasi'"><span class="absolute top-3 right-3 bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow">${p.pencapaian}</span></div>
-                        <div class="p-5 space-y-2">
-                            <h4 class="font-bold text-slate-800 text-sm">${p.namaLomba}</h4>
-                            <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 pt-2 border-t border-purple-50">
-                                <div><span class="text-slate-400 block text-[10px]">Kategori</span><strong>${p.kategori}</strong></div>
-                                <div><span class="text-slate-400 block text-[10px]">Penyelenggara</span><strong>${p.penyelenggara}</strong></div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            // Tab Insiden
-            const studentInsiden = appData.insiden.filter(i => i.student_id === nis);
-            document.getElementById('countInsiden').innerText = studentInsiden.length;
-            const insidenContainer = document.getElementById('insidenListContainer');
-            insidenContainer.innerHTML = studentInsiden.length === 0 ? `<div class="text-center py-8 text-slate-400 italic bg-[#fbf9fd] rounded-2xl">Tidak ada catatan insiden.</div>` : '';
-            studentInsiden.forEach(i => {
-                insidenContainer.innerHTML += `
-                    <div class="bg-amber-50/50 border border-amber-200 p-5 rounded-2xl shadow-sm space-y-2">
-                        <div class="flex items-center justify-between"><span class="text-xs bg-amber-200 text-amber-900 font-bold px-2.5 py-1 rounded-lg">${i.jenis}</span><span class="text-xs text-amber-800 font-medium">${i.tanggal}</span></div>
-                        <h4 class="font-bold text-slate-800 text-sm">Peran: ${i.peran}</h4>
-                        <p class="text-xs text-slate-700"><strong>Catatan:</strong> ${i.catatan}</p>
-                    </div>
-                `;
-            });
-
-            // Tab Bacaan
-            const studentBacaan = appData.bacaan.filter(b => b.nis === nis);
-            document.getElementById('countBacaan').innerText = studentBacaan.length;
-            document.getElementById('summaryTotalBuku').innerText = `${studentBacaan.length} Buku`;
-            document.getElementById('summaryTotalPoin').innerText = `${studentBacaan.reduce((acc, curr) => acc + (parseInt(curr.poin) || 1), 0)} Poin`;
-            const bacaanTable = document.getElementById('bacaanTableBody');
-            bacaanTable.innerHTML = studentBacaan.length === 0 ? `<tr><td colspan="4" class="text-center py-8 text-slate-400 italic">Belum ada aktivitas membaca.</td></tr>` : '';
-            studentBacaan.forEach(b => {
-                bacaanTable.innerHTML += `
-                    <tr class="hover:bg-purple-50/50 transition"><td class="px-4 py-3 text-xs text-slate-600">${b.tanggal}</td><td class="px-4 py-3 text-xs font-bold text-slate-800">${b.judul_buku}</td><td class="px-4 py-3 text-xs"><span class="bg-purple-100 text-purple-900 px-2 py-0.5 rounded">${b.level}</span></td><td class="px-4 py-3 text-xs font-bold text-emerald-600">+${b.poin}</td></tr>
-                `;
-            });
-
-            switchProfileTab('biodata');
-            lucide.createIcons();
-        }
-
-        function renderGlobalPrestasi() {
-            const container = document.getElementById('globalPrestasiGrid');
-            container.innerHTML = '';
-            if (appData.prestasi.length === 0) {
-                container.innerHTML = `<div class="col-span-3 text-center py-10 text-slate-400">Belum ada data prestasi.</div>`;
-                return;
-            }
-            appData.prestasi.forEach(p => {
-                container.innerHTML += `
-                    <div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden flex flex-col justify-between">
-                        <div class="h-40 bg-slate-100 relative"><img src="${p.foto}" alt="Foto" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x300/684e7d/ffffff?text=Prestasi'"><span class="absolute top-3 right-3 bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow">${p.pencapaian}</span></div>
-                        <div class="p-5 space-y-2">
-                            <h4 class="font-bold text-slate-800 text-sm">${p.namaLomba}</h4>
-                            <p class="text-xs text-purple-700 font-semibold">Siswa: ${p.namaSiswa || p.nis} (${p.kelas || 'Kelas'})</p>
-                            <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 pt-2 border-t border-purple-50">
-                                <div><span class="text-slate-400 block text-[10px]">Kategori</span><strong>${p.kategori}</strong></div>
-                                <div><span class="text-slate-400 block text-[10px]">Penyelenggara</span><strong>${p.penyelenggara}</strong></div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function renderGlobalInsiden() {
-            const container = document.getElementById('globalInsidenList');
-            container.innerHTML = '';
-            if (appData.insiden.length === 0) {
-                container.innerHTML = `<div class="text-center py-10 text-slate-400">Tidak ada catatan insiden.</div>`;
-                return;
-            }
-            appData.insiden.forEach(i => {
-                container.innerHTML += `
-                    <div class="bg-white border border-purple-100 p-5 rounded-2xl shadow-sm space-y-2">
-                        <div class="flex items-center justify-between"><span class="text-xs bg-amber-100 text-amber-900 font-bold px-2.5 py-1 rounded-lg">${i.jenis}</span><span class="text-xs text-slate-500 font-medium">${i.tanggal}</span></div>
-                        <h4 class="font-bold text-slate-800 text-sm">Siswa: ${i.nama || i.student_id} (${i.kelas})</h4>
-                        <p class="text-xs text-slate-700"><strong>Catatan:</strong> ${i.catatan}</p>
-                        <p class="text-xs text-slate-500"><strong>Tindakan:</strong> ${i.tindakan}</p>
-                    </div>
-                `;
-            });
-        }
-
-        function renderGlobalBacaan() {
-            const tbody = document.getElementById('globalBacaanTableBody');
-            tbody.innerHTML = '';
-            if (appData.bacaan.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-slate-400">Belum ada log bacaan.</td></tr>`;
-                return;
-            }
-            appData.bacaan.forEach(b => {
-                tbody.innerHTML += `
-                    <tr class="hover:bg-purple-50/50 transition">
-                        <td class="px-4 py-3 text-xs text-slate-600">${b.tanggal}</td>
-                        <td class="px-4 py-3 text-xs font-bold text-slate-800">${b.nama_lengkap || b.nis}</td>
-                        <td class="px-4 py-3 text-xs text-slate-600">${b.kelas}</td>
-                        <td class="px-4 py-3 text-xs font-semibold text-slate-800">${b.judul_buku}</td>
-                        <td class="px-4 py-3 text-xs"><span class="bg-purple-100 text-purple-900 px-2 py-0.5 rounded">${b.level}</span></td>
-                        <td class="px-4 py-3 text-xs font-bold text-emerald-600">+${b.poin} Poin</td>
-                    </tr>
-                `;
-            });
-        }
-
-        function renderRekapitulasi() {
-            const tbody = document.getElementById('rekapitulasiTableBody');
-            tbody.innerHTML = '';
-            const classMap = {};
-            appData.biodata.forEach(s => {
-                const cls = s.kelas || '6 Einstein';
-                if (!classMap[cls]) classMap[cls] = { students: 0, prestasi: 0, bacaan: 0 };
-                classMap[cls].students++;
-            });
-            appData.prestasi.forEach(p => {
-                const cls = p.kelas || '6 Einstein';
-                if (!classMap[cls]) classMap[cls] = { students: 0, prestasi: 0, bacaan: 0 };
-                classMap[cls].prestasi++;
-            });
-            appData.bacaan.forEach(b => {
-                const cls = b.kelas || '6 Einstein';
-                if (!classMap[cls]) classMap[cls] = { students: 0, prestasi: 0, bacaan: 0 };
-                classMap[cls].bacaan++;
-            });
-
-            const classes = Object.keys(classMap).sort();
-            if (classes.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-slate-400">Belum ada data rekapitulasi.</td></tr>`;
-                return;
-            }
-
-            classes.forEach(cls => {
-                const data = classMap[cls];
-                tbody.innerHTML += `
-                    <tr class="hover:bg-purple-50/50 transition">
-                        <td class="px-6 py-4 font-bold text-slate-800">${cls}</td>
-                        <td class="px-6 py-4 text-center font-semibold text-purple-700">${data.students} Siswa</td>
-                        <td class="px-6 py-4 text-center text-emerald-600 font-bold">${data.prestasi} Prestasi</td>
-                        <td class="px-6 py-4 text-center text-purple-600 font-bold">${data.bacaan} Buku</td>
-                        <td class="px-6 py-4 text-right">
-                            <button onclick="selectClass('${cls}')" class="text-xs bg-purple-100 hover:bg-purple-200 text-purple-900 px-3.5 py-1.5 rounded-xl font-semibold transition">Lihat Kelas →</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function renderStatistik() {
-            document.getElementById('statCardSiswa').innerText = appData.biodata.length;
-            document.getElementById('statCardPrestasi').innerText = appData.prestasi.length;
-            document.getElementById('statCardInsiden').innerText = appData.insiden.length;
-            document.getElementById('statCardBacaan').innerText = appData.bacaan.length;
-        }
-
-        function saveAndReloadSettings() {
-            SHEET_URLS.biodata = document.getElementById('settingUrlBiodata').value;
-            SHEET_URLS.prestasi = document.getElementById('settingUrlPrestasi').value;
-            SHEET_URLS.insiden = document.getElementById('settingUrlInsiden').value;
-            SHEET_URLS.bacaan = document.getElementById('settingUrlBacaan').value;
-            
-            const selectedHex = document.getElementById('settingHexInput').value || '#564563';
-            applyTheme(selectedHex);
-
-            loadData();
-            switchSidebarView('dashboard');
-            showToast("Pengaturan Google Sheets & Tema warna berhasil disimpan!");
-        }
-
-        function backToStudentList() {
-            if (activeClass) selectClass(activeClass);
-            else switchSidebarView('dashboard');
-        }
-
-        function switchProfileTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.profile-tab').forEach(el => {
-                el.className = "profile-tab px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-purple-200 hover:text-white hover:bg-white/10 flex items-center gap-2";
-            });
-            document.getElementById(`tabContent-${tabName}`).classList.remove('hidden');
-            document.getElementById(`tabBtn-${tabName}`).className = "profile-tab px-4 py-2.5 text-xs font-bold rounded-t-xl transition bg-white text-purple-950 flex items-center gap-2 shadow-md";
-        }
-
-        function printStudentReport() { window.print(); }
-
-        async function fetchCSV(url) {
-            return new Promise((resolve, reject) => {
-                Papa.parse(url, {
-                    download: true,
-                    header: true,
-                    skipEmptyLines: true,
-                    complete: function(results) {
-                        if (results.errors && results.errors.length > 0 && results.data.length === 0) {
-                            reject(new Error("Gagal parsing CSV"));
-                            return;
-                        }
-                        resolve(results.data);
-                    },
-                    error: function(err) { reject(err); }
-                });
-            });
-        }
-       
-    </script>
-   
-<script>
-/* =====================================================================
-   PERBAIKAN PENGAMBILAN DATA - tempel TEPAT SEBELUM tag </script> terakhir
-   (setelah fungsi printStudentReport / fetchCSV). Tampilan tidak diubah.
-   ===================================================================== */
-
-// Nama tab pada masing-masing Google Sheet. Ubah di sini jika nama tab Anda berbeda.
-const SHEET_TABS = {
-    biodataMaster: 'Data Master',
-    biodataKelas:  'Riwayat_Kelas',
-    prestasi:      'Prestasi',
-    peristiwa:     'Peristiwa',
-    terlibat:      'Siswa_terlibat',
-    bacaanMaster:  'Master_Siswa',
-    bacaanLog:     'Log_Baca'
-};
-
-let RAW_CACHE = null;
-
-const _norm = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-const _digits = v => String(v ?? '').replace(/\D/g, '');
-const _findKey = (headers, re) => (headers || []).find(h => re.test(_norm(h)));
-const _year = y => String(y || '').trim().replace(/\s+/g, '').replace(/[-–]/g, '/');
-const _get = (row, ...names) => {
-    for (const n of names) {
-        const k = Object.keys(row).find(k => _norm(k) === _norm(n));
-        if (k && String(row[k]).trim() !== '') return String(row[k]).trim();
-    }
-    return '';
-};
-
-// Ambil SATU TAB tertentu (bukan hanya tab pertama seperti export?format=csv)
-async function fetchTab(url, tab) {
-    const m = String(url).match(/\/d\/([a-zA-Z0-9_-]+)/);
-    if (!m) throw new Error('URL sheet tidak valid');
-    let res;
-    try {
-        res = await fetch(`https://docs.google.com/spreadsheets/d/${m[1]}/gviz/tq?tqx=out:csv&headers=1&sheet=${encodeURIComponent(tab)}`);
-    } catch (e) {
-        throw new Error(`Tab "${tab}": tidak bisa terhubung (diblokir browser, offline, atau halaman dibuka lewat file://, bukan lewat hosting)`);
-    }
-    if (!res.ok) throw new Error(`Tab "${tab}": HTTP ${res.status} (sheet belum dibagikan "Anyone with the link"?)`);
-    const text = await res.text();
-    if (/^\s*<(!doctype|html)/i.test(text)) throw new Error(`Tab "${tab}": sheet belum dibagikan publik (diminta login) atau nama tab salah`);
-    const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
-    const headers = (parsed.meta.fields || []).map(h => h.trim());
-    const rows = parsed.data.map(r => {
-        const o = {};
-        Object.keys(r).forEach(k => { o[k.trim()] = String(r[k] ?? '').trim(); });
-        return o;
-    });
-    return { headers, rows };
-}
-
-async function loadData() {
-    showToast('Menghubungkan ke Google Sheets...');
-    try {
-        const key = JSON.stringify(SHEET_URLS);
-        if (!RAW_CACHE || RAW_CACHE.key !== key) {
-            const jobs = {
-                master:     () => fetchTab(SHEET_URLS.biodata,  SHEET_TABS.biodataMaster),
-                kelas:      () => fetchTab(SHEET_URLS.biodata,  SHEET_TABS.biodataKelas),
-                prestasi:   () => fetchTab(SHEET_URLS.prestasi, SHEET_TABS.prestasi),
-                peristiwa:  () => fetchTab(SHEET_URLS.insiden,  SHEET_TABS.peristiwa),
-                terlibat:   () => fetchTab(SHEET_URLS.insiden,  SHEET_TABS.terlibat),
-                masterBaca: () => fetchTab(SHEET_URLS.bacaan,   SHEET_TABS.bacaanMaster),
-                log:        () => fetchTab(SHEET_URLS.bacaan,   SHEET_TABS.bacaanLog)
-            };
-            const names = Object.keys(jobs);
-            const settled = await Promise.allSettled(names.map(n => jobs[n]()));
-            RAW_CACHE = { key, data: {}, errors: {} };
-            names.forEach((n, i) => {
-                if (settled[i].status === 'fulfilled') RAW_CACHE.data[n] = settled[i].value;
-                else RAW_CACHE.errors[n] = settled[i].reason?.message || String(settled[i].reason);
-            });
-        }
-        const warnings = buildAppData();
-        const label = { master: 'Data Master', kelas: 'Riwayat_Kelas', prestasi: 'Prestasi', peristiwa: 'Peristiwa', terlibat: 'Siswa_terlibat', masterBaca: 'Master_Siswa', log: 'Log_Baca' };
-        const sum = Object.keys(RAW_CACHE.data).map(k => `${label[k]}: ${RAW_CACHE.data[k].rows.length} baris`).join(' · ');
-        if (warnings.length) {
-            updateConnectionBanner(false, 'Sebagian data bermasalah → ' + warnings.join(' | ') + '  (Terbaca: ' + (sum || 'tidak ada') + ')');
-            showToast('Sebagian data belum terbaca. Lihat banner status.');
-        } else {
-            updateConnectionBanner(true, 'Berhasil terhubung. Terbaca → ' + sum + ' · Siswa tahun ' + currentYear + ': ' + appData.biodata.length);
-            showToast('Data Google Sheets berhasil dimuat!');
-        }
-    } catch (e) {
-        console.warn('Gagal memuat data:', e);
-        updateConnectionBanner(false, 'Gagal koneksi (' + e.message + '). Pastikan sheet diset "Anyone with the link can view".');
-        showToast('Gagal memuat Google Sheets.');
-    }
-
-    renderDashboard();
-    renderDirectoryStudents();
-    renderGlobalPrestasi();
-    renderGlobalInsiden();
-    renderGlobalBacaan();
-    renderRekapitulasi();
-    renderStatistik();
-}
-
-function refreshData() { RAW_CACHE = null; loadData(); }
-
-function buildAppData() {
-    const D = RAW_CACHE.data, E = RAW_CACHE.errors, warn = [];
-    Object.keys(E).forEach(k => warn.push(`${k}: ${E[k]}`));
-
-    // 1) Siswa dari Data Master
-    const students = new Map();
-    if (D.master) {
-        const h = D.master.headers;
-        const kNis = _findKey(h, /^nis|^nipd|^nomorinduk/), kNama = _findKey(h, /^namalengkap|^nama$/);
-        if (!kNis || !kNama) warn.push(`Data Master: kolom NIS/Nama tidak ditemukan (kolom: ${h.join(', ')})`);
-        else D.master.rows.forEach(r => {
-            const nis = _digits(r[kNis]);
-            if (!nis || !r[kNama]) return;
-            const g = re => { const k = _findKey(h, re); return k ? r[k] : ''; };
-            const jk = g(/^lp$|^jeniskelamin|^jk$/);
-            const ayah = g(/^namaayah/), ibu = g(/^namaibu/);
-            const telA = g(/^notlpayah|^notelpayah|^teleponayah/), telI = g(/^notelpibu|^notlpibu|^teleponibu/);
-            students.set(nis, {
-                nis, nama: r[kNama],
-                panggilan: g(/^panggilan/) || '',
-                nisn: g(/^nisn$/) || '-',
-                jk: jk === 'L' ? 'Laki-laki' : jk === 'P' ? 'Perempuan' : (jk || '-'),
-                ttl: [g(/^tempatlahir/), g(/^tgllahir|^tanggallahir/)].filter(Boolean).join(', ') || '-',
-                agama: g(/^agama/) || '-',
-                alamat: g(/^alamat/) || '-',
-                telepon: [telA && `Ayah ${telA}`, telI && `Ibu ${telI}`].filter(Boolean).join(' / ') || '-',
-                email: '-',
-                wali: [ayah && `Ayah: ${ayah}`, ibu && `Ibu: ${ibu}`].filter(Boolean).join(' · ') || '-',
-                pekerjaan_wali: 'orang tua'
-            });
-        });
-    }
-
-    // 2) Riwayat kelas per tahun pelajaran (Riwayat_Kelas + Master_Siswa di sheet bacaan)
-    const enr = new Map();
-    const addEnr = (nis, year, kelas) => {
-        year = _year(year); kelas = String(kelas || '').trim();
-        if (nis && year && kelas && !enr.has(nis + '|' + year)) enr.set(nis + '|' + year, { nis, year, kelas });
+    /* ===================== KONFIGURASI ===================== */
+    const APP_VERSION = 'Versi 2 · 1 Okt 2026';
+
+    let SHEET_URLS = {
+        biodata:  'https://docs.google.com/spreadsheets/d/1HIld6F9AM9LMKdZnWClrH3d8avQ3_4BXoTYZn-22Oqc/edit',
+        prestasi: 'https://docs.google.com/spreadsheets/d/1XBOIT08bXEK8Qo96isQjYFzQZnyG-ZIDjoE2Xv0y3n8/edit',
+        insiden:  'https://docs.google.com/spreadsheets/d/1XJzYHzgJRyx72IQcj36lh0Y0jAhoK_WGCFCgtibzfuY/edit',
+        bacaan:   'https://docs.google.com/spreadsheets/d/1imf1WCO2uzXKFnVxsih6oDu142Bk7RK6ErzfsPfnVPU/edit'
     };
-    if (D.kelas) {
-        const h = D.kelas.headers;
-        const kN = _findKey(h, /^nis|^nipd|^nomorinduk/), kT = _findKey(h, /tahun|tapel|ajaran|^ta$/), kK = _findKey(h, /^kelas|namakelas|rombel/);
-        const wide = h.filter(x => /^\d{4}[\/\-]\d{4}$/.test(x.trim()));
-        if (!kN || !((kT && kK) || wide.length)) warn.push(`Riwayat_Kelas: struktur kolom tidak dikenali (kolom: ${h.join(', ')})`);
-        else D.kelas.rows.forEach(r => {
-            const nis = _digits(r[kN]);
-            if (kT && kK) addEnr(nis, r[kT], r[kK]);
-            else wide.forEach(y => addEnr(nis, y, r[y]));
+
+    // Nama tab pada masing-masing Google Sheet. Ubah di sini jika nama tab Anda berbeda.
+    const SHEET_TABS = {
+        biodataMaster: 'Data Master',
+        biodataKelas:  'Riwayat_Kelas',
+        prestasi:      'Prestasi',
+        peristiwa:     'Peristiwa',
+        terlibat:      'Siswa_terlibat',
+        bacaanMaster:  'Master_Siswa',
+        bacaanLog:     'Log_Baca'
+    };
+
+    let appData = { biodata: [], prestasi: [], insiden: [], bacaan: [] };
+    let currentYear = '2026/2027';
+    let activeClass = null;
+    let activeStudentNIS = null;
+    let RAW_CACHE = null;
+
+    /* ===================== UTILITAS ===================== */
+    const _norm = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const _digits = v => String(v ?? '').replace(/\D/g, '');
+    const _findKey = (headers, re) => (headers || []).find(h => re.test(_norm(h)));
+    const _year = y => String(y || '').trim().replace(/\s+/g, '').replace(/[-–]/g, '/');
+    const _get = (row, ...names) => {
+        for (const n of names) {
+            const k = Object.keys(row).find(k => _norm(k) === _norm(n));
+            if (k && String(row[k]).trim() !== '') return String(row[k]).trim();
+        }
+        return '';
+    };
+    const _esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const _ts = s => {
+        const m = String(s).match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+        if (m) return new Date(+m[3], +m[2] - 1, +m[1]).getTime();
+        const d = Date.parse(s); return isNaN(d) ? 0 : d;
+    };
+    const _kelasOrder = (a, b) => (parseInt(a) || 99) - (parseInt(b) || 99) || a.localeCompare(b, 'id', { numeric: true });
+    const _num = v => parseFloat(String(v).replace(',', '.')) || 0;
+
+    /* ===================== TEMA & UI DASAR ===================== */
+    window.onload = async function () {
+        lucide.createIcons();
+        document.getElementById('appVersion').innerText = APP_VERSION;
+        document.getElementById('settingUrlBiodata').value = SHEET_URLS.biodata;
+        document.getElementById('settingUrlPrestasi').value = SHEET_URLS.prestasi;
+        document.getElementById('settingUrlInsiden').value = SHEET_URLS.insiden;
+        document.getElementById('settingUrlBacaan').value = SHEET_URLS.bacaan;
+        loadSavedTheme();
+        await loadData();
+    };
+
+    function adjustColorBrightness(hex, percent) {
+        const num = parseInt(hex.replace('#', ''), 16), amt = Math.round(2.55 * percent);
+        const R = (num >> 16) + amt, G = (num >> 8 & 0x00FF) + amt, B = (num & 0x0000FF) + amt;
+        return '#' + (0x1000000 + (R < 255 ? R < 0 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 0 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 0 ? 0 : B : 255)).toString(16).slice(1);
+    }
+    function applyTheme(hex) {
+        if (!/^#[0-9a-f]{6}$/i.test(hex || '')) hex = '#564563';
+        document.getElementById('dynamicThemeStyle').innerHTML = `
+            aside#sidebar { background-color: ${adjustColorBrightness(hex, -20)} !important; border-color: ${adjustColorBrightness(hex, -10)} !important; }
+            header#mainHeader { background-color: ${hex} !important; border-color: ${adjustColorBrightness(hex, 10)} !important; }
+            #heroBanner { background: linear-gradient(to right, ${hex}, ${adjustColorBrightness(hex, 20)}, ${adjustColorBrightness(hex, 35)}) !important; }
+            #profileHeaderCard { background: linear-gradient(to right, ${hex}, ${adjustColorBrightness(hex, 25)}) !important; }`;
+        try { localStorage.setItem('appThemeColor', hex); } catch (e) {}
+    }
+    function loadSavedTheme() {
+        let saved = '#564563';
+        try { saved = localStorage.getItem('appThemeColor') || saved; } catch (e) {}
+        document.getElementById('settingThemeColor').value = saved;
+        document.getElementById('settingHexInput').value = saved;
+        applyTheme(saved);
+    }
+    function showToast(message) {
+        const t = document.getElementById('toast');
+        document.getElementById('toastMessage').innerText = message;
+        t.classList.remove('hidden');
+        clearTimeout(showToast._t);
+        showToast._t = setTimeout(() => t.classList.add('hidden'), 3500);
+    }
+    function toggleMobileSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
+    function toggleDataSource() { showToast('Mode: data selalu diambil langsung (live) dari Google Sheets.'); }
+
+    function updateConnectionBanner(isSuccess, message) {
+        const b = document.getElementById('connectionStatusBanner');
+        document.getElementById('connectionStatusText').innerText = message;
+        b.className = (isSuccess
+            ? 'bg-emerald-50 border border-emerald-200 text-emerald-900'
+            : 'bg-amber-50 border border-amber-300 text-amber-900') + ' p-4 rounded-2xl flex items-center justify-between gap-3 text-xs no-print shadow-sm';
+        document.getElementById('connectionIconBox').className = (isSuccess ? 'bg-emerald-600' : 'bg-amber-600') + ' text-white p-2 rounded-xl shadow-sm shrink-0';
+    }
+
+    /* ===================== PENGAMBILAN DATA ===================== */
+    // Ambil SATU TAB tertentu (bukan hanya tab pertama)
+    async function fetchTab(url, tab) {
+        const m = String(url).match(/\/d\/([a-zA-Z0-9_-]+)/);
+        if (!m) throw new Error('URL sheet tidak valid');
+        let res;
+        try {
+            res = await fetch(`https://docs.google.com/spreadsheets/d/${m[1]}/gviz/tq?tqx=out:csv&headers=1&sheet=${encodeURIComponent(tab)}`);
+        } catch (e) {
+            throw new Error(`Tab "${tab}": tidak bisa terhubung (diblokir browser atau offline)`);
+        }
+        if (!res.ok) throw new Error(`Tab "${tab}": HTTP ${res.status} (sheet belum dibagikan "Anyone with the link"?)`);
+        const text = await res.text();
+        if (/^\s*<(!doctype|html)/i.test(text)) throw new Error(`Tab "${tab}": sheet belum dibagikan publik (diminta login) atau nama tab salah`);
+        const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
+        const headers = (parsed.meta.fields || []).map(h => h.trim());
+        const rows = parsed.data.map(r => {
+            const o = {};
+            Object.keys(r).forEach(k => { o[k.trim()] = String(r[k] ?? '').trim(); });
+            return o;
         });
+        return { headers, rows };
     }
-    if (D.masterBaca) {
-        const h = D.masterBaca.headers;
-        const kN = _findKey(h, /^nomorinduk|^nis/), kK = _findKey(h, /^kelas/), kT = _findKey(h, /tahunajaran|tahun/);
-        const kNama = _findKey(h, /^namalengkap|^nama/), kP = _findKey(h, /^panggilan/);
-        if (kN && kK && kT) D.masterBaca.rows.forEach(r => {
-            const nis = _digits(r[kN]);
-            addEnr(nis, r[kT], r[kK]);
-        });
+
+    async function loadData() {
+        showToast('Menghubungkan ke Google Sheets...');
+        try {
+            const key = JSON.stringify(SHEET_URLS);
+            if (!RAW_CACHE || RAW_CACHE.key !== key) {
+                const jobs = {
+                    master:     () => fetchTab(SHEET_URLS.biodata,  SHEET_TABS.biodataMaster),
+                    kelas:      () => fetchTab(SHEET_URLS.biodata,  SHEET_TABS.biodataKelas),
+                    prestasi:   () => fetchTab(SHEET_URLS.prestasi, SHEET_TABS.prestasi),
+                    peristiwa:  () => fetchTab(SHEET_URLS.insiden,  SHEET_TABS.peristiwa),
+                    terlibat:   () => fetchTab(SHEET_URLS.insiden,  SHEET_TABS.terlibat),
+                    masterBaca: () => fetchTab(SHEET_URLS.bacaan,   SHEET_TABS.bacaanMaster),
+                    log:        () => fetchTab(SHEET_URLS.bacaan,   SHEET_TABS.bacaanLog)
+                };
+                const names = Object.keys(jobs);
+                const settled = await Promise.allSettled(names.map(n => jobs[n]()));
+                RAW_CACHE = { key, data: {}, errors: {} };
+                names.forEach((n, i) => {
+                    if (settled[i].status === 'fulfilled') RAW_CACHE.data[n] = settled[i].value;
+                    else RAW_CACHE.errors[n] = settled[i].reason?.message || String(settled[i].reason);
+                });
+            }
+            const warnings = buildAppData();
+            const label = { master: 'Data Master', kelas: 'Riwayat_Kelas', prestasi: 'Prestasi', peristiwa: 'Peristiwa', terlibat: 'Siswa_terlibat', masterBaca: 'Master_Siswa', log: 'Log_Baca' };
+            const sum = Object.keys(RAW_CACHE.data).map(k => `${label[k]}: ${RAW_CACHE.data[k].rows.length} baris`).join(' · ');
+            if (warnings.length) {
+                updateConnectionBanner(false, 'Sebagian data bermasalah → ' + warnings.join(' | ') + '  (Terbaca: ' + (sum || 'tidak ada') + ')');
+                showToast('Sebagian data belum terbaca. Lihat banner status.');
+            } else {
+                updateConnectionBanner(true, 'Berhasil terhubung. Terbaca → ' + sum + ' · Siswa tahun ' + currentYear + ': ' + appData.biodata.length);
+                showToast('Data Google Sheets berhasil dimuat!');
+            }
+        } catch (e) {
+            console.warn('Gagal memuat data:', e);
+            updateConnectionBanner(false, 'Gagal memuat data (' + e.message + ')');
+            showToast('Gagal memuat Google Sheets.');
+        }
+        renderAll();
     }
-    const enrList = [...enr.values()].filter(e => students.has(e.nis));
-    const years = [...new Set(enrList.map(e => e.year))].sort().reverse();
-    if (!years.includes(_year(currentYear))) currentYear = years[0] || currentYear;
-
-    const riwayatOf = nis => enrList.filter(e => e.nis === nis).sort((a, b) => b.year.localeCompare(a.year));
-    if (enrList.length) {
-        appData.biodata = enrList.filter(e => e.year === _year(currentYear)).map(e => {
-            const s = students.get(e.nis);
-            return { ...s, kelas: e.kelas, tahun_ajaran: e.year, riwayat: riwayatOf(e.nis) };
-        });
-    } else {
-        // Data kelas belum terbaca: tampilkan semua siswa agar tidak kosong
-        if (students.size) warn.push('Data kelas belum ditemukan, semua siswa ditampilkan di "Belum ada kelas"');
-        appData.biodata = [...students.values()].map(s => ({ ...s, kelas: 'Belum ada kelas', tahun_ajaran: currentYear, riwayat: [] }));
+    function refreshData() { RAW_CACHE = null; loadData(); }
+    function renderAll() {
+        renderDashboard(); renderDirectoryStudents(); renderGlobalPrestasi(); renderGlobalInsiden();
+        renderGlobalBacaan(); renderRekapitulasi(); renderStatistik();
+        if (activeStudentNIS && !document.getElementById('viewStudentProfile').classList.contains('hidden')) selectStudent(activeStudentNIS);
+        lucide.createIcons();
     }
-    appData.biodata.sort((a, b) => a.nama.localeCompare(b.nama, 'id'));
 
-    // dropdown tahun pelajaran diisi dari data
-    const sel = document.getElementById('globalYearSelect');
-    if (sel && years.length) {
-        sel.innerHTML = years.map(y => `<option value="${y}" class="bg-[#564563] text-white"${y === _year(currentYear) ? ' selected' : ''}>${y}</option>`).join('');
+    function normalizePrestasi(rows) {
+        return rows.map(r => {
+            const clean = {};
+            Object.keys(r).forEach(k => clean[k.trim().toLowerCase().replace(/[\s\.\-]+/g, '_')] = r[k]);
+            return {
+                id: String(clean.id || '').trim(),
+                nis: _digits(clean.nis || clean.nomor_induk || ''),
+                namaSiswa: String(clean.namasiswa || clean.nama || '').trim(),
+                pencapaian: String(clean.pencapaian || clean.prestasi || '').trim(),
+                kategori: String(clean.kategori || 'Umum').trim(),
+                namaLomba: String(clean.namalomba || clean.lomba || clean.kegiatan || '').trim(),
+                penyelenggara: String(clean.penyelenggara || '-').trim(),
+                tanggal: String(clean.tanggal || '-').trim(),
+                tempat: String(clean.tempat || '-').trim(),
+                tahunPelajaran: String(clean.tahunpelajaran || clean.tahun || '').trim(),
+                kelas: String(clean.kelas || '').trim(),
+                foto: [clean.foto, clean.fotopreview].map(u => String(u || '').trim()).find(u => /^https?:/i.test(u)) || 'https://placehold.co/400x300/684e7d/ffffff?text=Prestasi+Siswa'
+            };
+        }).filter(x => x.nis !== '');
     }
-    ['heroYear', 'yearLabelDisplay'].forEach(id => { const el = document.getElementById(id); if (el) el.innerText = currentYear; });
-    document.querySelectorAll('.current-year-text').forEach(el => el.innerText = currentYear);
+    function normalizeBacaan(rows) {
+        return rows.map(r => {
+            const clean = {};
+            Object.keys(r).forEach(k => clean[k.trim().toLowerCase().replace(/[\s\.\-]+/g, '_')] = r[k]);
+            return {
+                tanggal: String(clean.tanggal || '-').trim(),
+                nis: _digits(clean.nis || clean.nomor_induk || ''),
+                nama_lengkap: String(clean.nama_lengkap || clean.nama || '').trim(),
+                kelas: String(clean.kelas || '').trim(),
+                judul_buku: String(clean.judul_buku || clean.judul || clean.buku || '').trim(),
+                level: String(clean.level || '-').trim(),
+                poin: String(clean.poin || '0').trim()
+            };
+        }).filter(x => x.nis !== '');
+    }
 
-    if (D.prestasi && !_findKey(D.prestasi.headers, /^nis$/)) warn.push(`Prestasi: kolom nis tidak ditemukan (kolom: ${D.prestasi.headers.join(', ')})`);
-    if (D.log && !_findKey(D.log.headers, /^nis$/)) warn.push(`Log_Baca: kolom NIS tidak ditemukan (kolom: ${D.log.headers.join(', ')})`);
+    function buildAppData() {
+        const D = RAW_CACHE.data, E = RAW_CACHE.errors, warn = [];
+        Object.keys(E).forEach(k => warn.push(`${k}: ${E[k]}`));
 
-    // 3) Prestasi
-    appData.prestasi = D.prestasi ? normalizePrestasi(D.prestasi.rows).map(p => ({ ...p, nis: _digits(p.nis) })) : [];
-
-    // 4) Insiden: gabungkan Siswa_terlibat (student_id) dengan Peristiwa (incident_id)
-    appData.insiden = [];
-    if (D.peristiwa && D.terlibat) {
-        const ph = D.peristiwa.headers, th = D.terlibat.headers;
-        const pId = _findKey(ph, /incidentid/) || ph[0];
-        const tId = _findKey(th, /incidentid/) || th[0], tS = _findKey(th, /studentid/) || _findKey(th, /^nis/);
-        const tNama = _findKey(th, /^namasiswa|^nama/), tKelas = _findKey(th, /^kelas/), tPeran = _findKey(th, /peran/);
-        if (!tS) warn.push(`Siswa_terlibat: kolom student_id tidak ditemukan (kolom: ${th.join(', ')})`);
-        else {
-            const byId = new Map(D.peristiwa.rows.map(r => [r[pId], r]));
-            D.terlibat.rows.forEach(t => {
-                const inc = byId.get(t[tId]);
-                const nis = _digits(t[tS]);
-                if (!inc || !nis) return;
-                appData.insiden.push({
-                    incident_id: t[tId], student_id: nis,
-                    nama: t[tNama] || '', kelas: t[tKelas] || '', peran: (tPeran && t[tPeran]) || 'Siswa Terlibat',
-                    tanggal: _get(inc, 'tanggal_kejadian', 'tanggal'),
-                    jenis: _get(inc, 'kategori', 'jenis') || 'Peristiwa',
-                    catatan: _get(inc, 'ringkasan_kejadian', 'catatan'),
-                    tindakan: _get(inc, 'upaya_penyelesaian', 'tindakan') || '-',
-                    waktu: _get(inc, 'waktu_kejadian'),
-                    tempat: _get(inc, 'tempat_kejadian'),
-                    guru: _get(inc, 'guru_pembuat'),
-                    pihak: _get(inc, 'pihak_yang_diinfokan'),
-                    bantuan: _get(inc, 'bantuan_yang_diperlukan'),
-                    detail_bantuan: _get(inc, 'detail_bantuan')
+        // 1) Siswa dari Data Master
+        const students = new Map();
+        if (D.master) {
+            const h = D.master.headers;
+            const kNis = _findKey(h, /^nis|^nipd|^nomorinduk/), kNama = _findKey(h, /^namalengkap|^nama$/);
+            if (!kNis || !kNama) warn.push(`Data Master: kolom NIS/Nama tidak ditemukan (kolom: ${h.join(', ')})`);
+            else D.master.rows.forEach(r => {
+                const nis = _digits(r[kNis]);
+                if (!nis || !r[kNama]) return;
+                const g = re => { const k = _findKey(h, re); return k ? r[k] : ''; };
+                const jk = g(/^lp$|^jeniskelamin|^jk$/);
+                const ayah = g(/^namaayah/), ibu = g(/^namaibu/);
+                const telA = g(/^notlpayah|^notelpayah|^teleponayah/), telI = g(/^notelpibu|^notlpibu|^teleponibu/);
+                students.set(nis, {
+                    nis, nama: r[kNama],
+                    panggilan: g(/^panggilan/) || '',
+                    nisn: g(/^nisn$/) || '-',
+                    jk: jk === 'L' ? 'Laki-laki' : jk === 'P' ? 'Perempuan' : (jk || '-'),
+                    ttl: [g(/^tempatlahir/), g(/^tgllahir|^tanggallahir/)].filter(Boolean).join(', ') || '-',
+                    agama: g(/^agama/) || '-',
+                    alamat: g(/^alamat/) || '-',
+                    ayah: ayah || '-', telAyah: telA || '-', ibu: ibu || '-', telIbu: telI || '-'
                 });
             });
         }
+
+        // 2) Riwayat kelas per tahun pelajaran
+        const enr = new Map();
+        const addEnr = (nis, year, kelas) => {
+            year = _year(year); kelas = String(kelas || '').trim();
+            if (nis && year && kelas && !enr.has(nis + '|' + year)) enr.set(nis + '|' + year, { nis, year, kelas });
+        };
+        if (D.kelas) {
+            const h = D.kelas.headers;
+            const kN = _findKey(h, /^nis|^nipd|^nomorinduk/), kT = _findKey(h, /tahun|tapel|ajaran|^ta$/), kK = _findKey(h, /^kelas|namakelas|rombel/);
+            const wide = h.filter(x => /^\d{4}[\/\-]\d{4}$/.test(x.trim()));
+            if (!kN || !((kT && kK) || wide.length)) warn.push(`Riwayat_Kelas: struktur kolom tidak dikenali (kolom: ${h.join(', ')})`);
+            else D.kelas.rows.forEach(r => {
+                const nis = _digits(r[kN]);
+                if (kT && kK) addEnr(nis, r[kT], r[kK]);
+                else wide.forEach(y => addEnr(nis, y, r[y]));
+            });
+        }
+        if (D.masterBaca) {
+            const h = D.masterBaca.headers;
+            const kN = _findKey(h, /^nomorinduk|^nis/), kK = _findKey(h, /^kelas/), kT = _findKey(h, /tahunajaran|tahun/);
+            if (kN && kK && kT) D.masterBaca.rows.forEach(r => addEnr(_digits(r[kN]), r[kT], r[kK]));
+        }
+        const enrList = [...enr.values()].filter(e => students.has(e.nis));
+        const years = [...new Set(enrList.map(e => e.year))].sort().reverse();
+        if (years.length && !years.includes(_year(currentYear))) currentYear = years[0];
+        const riwayatOf = nis => enrList.filter(e => e.nis === nis).sort((a, b) => b.year.localeCompare(a.year));
+
+        if (enrList.length) {
+            appData.biodata = enrList.filter(e => e.year === _year(currentYear)).map(e => ({ ...students.get(e.nis), kelas: e.kelas, tahun_ajaran: e.year, riwayat: riwayatOf(e.nis) }));
+        } else {
+            if (students.size) warn.push('Data kelas belum ditemukan, semua siswa ditampilkan di "Belum ada kelas"');
+            appData.biodata = [...students.values()].map(s => ({ ...s, kelas: 'Belum ada kelas', tahun_ajaran: currentYear, riwayat: [] }));
+        }
+        appData.biodata.sort((a, b) => a.nama.localeCompare(b.nama, 'id'));
+
+        const sel = document.getElementById('globalYearSelect');
+        if (years.length) sel.innerHTML = years.map(y => `<option value="${y}" class="bg-[#564563] text-white"${y === _year(currentYear) ? ' selected' : ''}>${y}</option>`).join('');
+        ['heroYear', 'yearLabelDisplay'].forEach(id => { document.getElementById(id).innerText = currentYear; });
+        document.querySelectorAll('.current-year-text').forEach(el => el.innerText = currentYear);
+
+        // 3) Prestasi
+        if (D.prestasi && !_findKey(D.prestasi.headers, /^nis$/)) warn.push(`Prestasi: kolom nis tidak ditemukan (kolom: ${D.prestasi.headers.join(', ')})`);
+        appData.prestasi = D.prestasi ? normalizePrestasi(D.prestasi.rows) : [];
+
+        // 4) Insiden: Siswa_terlibat (student_id) + Peristiwa (incident_id)
+        appData.insiden = [];
+        if (D.peristiwa && D.terlibat) {
+            const ph = D.peristiwa.headers, th = D.terlibat.headers;
+            const pId = _findKey(ph, /incidentid/) || ph[0];
+            const tId = _findKey(th, /incidentid/) || th[0], tS = _findKey(th, /studentid/) || _findKey(th, /^nis/);
+            const tNama = _findKey(th, /^namasiswa|^nama/), tKelas = _findKey(th, /^kelas/), tPeran = _findKey(th, /peran/);
+            if (!tS) warn.push(`Siswa_terlibat: kolom student_id tidak ditemukan (kolom: ${th.join(', ')})`);
+            else {
+                const byId = new Map(D.peristiwa.rows.map(r => [r[pId], r]));
+                D.terlibat.rows.forEach(t => {
+                    const inc = byId.get(t[tId]), nis = _digits(t[tS]);
+                    if (!inc || !nis) return;
+                    appData.insiden.push({
+                        incident_id: t[tId], student_id: nis,
+                        nama: t[tNama] || '', kelas: t[tKelas] || '', peran: (tPeran && t[tPeran]) || 'Siswa Terlibat',
+                        tanggal: _get(inc, 'tanggal_kejadian', 'tanggal'),
+                        jenis: _get(inc, 'kategori', 'jenis') || 'Peristiwa',
+                        catatan: _get(inc, 'ringkasan_kejadian', 'catatan'),
+                        tindakan: _get(inc, 'upaya_penyelesaian', 'tindakan') || '-',
+                        waktu: _get(inc, 'waktu_kejadian'), tempat: _get(inc, 'tempat_kejadian'), guru: _get(inc, 'guru_pembuat'),
+                        pihak: _get(inc, 'pihak_yang_diinfokan'), bantuan: _get(inc, 'bantuan_yang_diperlukan'), detail_bantuan: _get(inc, 'detail_bantuan')
+                    });
+                });
+            }
+        }
+
+        // 5) Bacaan (Log_Baca)
+        if (D.log && !_findKey(D.log.headers, /^nis$/)) warn.push(`Log_Baca: kolom NIS tidak ditemukan (kolom: ${D.log.headers.join(', ')})`);
+        appData.bacaan = D.log ? normalizeBacaan(D.log.rows) : [];
+        return warn;
     }
 
-    // 5) Bacaan (tab Log_Baca)
-    appData.bacaan = D.log ? normalizeBacaan(D.log.rows).map(b => ({ ...b, nis: _digits(b.nis) })) : [];
+    function changeYear(year) { currentYear = year; activeClass = null; loadData(); switchSidebarView('dashboard'); }
 
-    return warn;
-}
+    /* ===================== NAVIGASI ===================== */
+    const ALL_VIEWS = ['viewDashboard', 'viewDataSiswa', 'viewStudentList', 'viewStudentProfile', 'viewGlobalPrestasi', 'viewGlobalInsiden', 'viewGlobalBacaan', 'viewRekapitulasi', 'viewStatistik', 'viewPengaturan'];
+    function showOnly(id) { ALL_VIEWS.forEach(v => document.getElementById(v).classList.toggle('hidden', v !== id)); window.scrollTo(0, 0); }
 
-// Setelah profil siswa dibuka: isi riwayat kelas asli dan hitung poin dengan benar
-const _origSelectStudent = selectStudent;
-selectStudent = function (nis) {
-    _origSelectStudent(nis);
-    const s = appData.biodata.find(x => x.nis === nis);
-    if (!s) return;
-    const box = document.getElementById('riwayatPendidikanContainer');
-    box.innerHTML = (s.riwayat && s.riwayat.length)
-        ? s.riwayat.map(r => {
-            const now = r.year === _year(currentYear);
-            return `<div class="flex items-center justify-between p-3.5 ${now ? 'bg-purple-100/70 border-purple-200' : 'bg-[#fbf9fd] border-purple-100'} border rounded-xl text-xs">
-                <span class="font-bold text-purple-950">${r.year}</span>
-                <span class="${now ? 'bg-purple-700 text-white px-2.5 py-1 rounded-lg font-semibold' : 'text-slate-600'}">${r.kelas}${now ? ' ← sedang dilihat' : ''}</span></div>`;
-        }).join('')
-        : '<div class="text-xs text-slate-400 italic">Riwayat kelas belum tersedia.</div>';
-    const poin = appData.bacaan.filter(b => b.nis === nis)
-        .reduce((a, b) => a + (parseFloat(String(b.poin).replace(',', '.')) || 0), 0);
-    document.getElementById('summaryTotalPoin').innerText = `${Math.round(poin * 10) / 10} Poin`;
+    function switchSidebarView(viewId) {
+        document.querySelectorAll('.sidebar-link').forEach(btn => {
+            btn.className = 'sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition hover:bg-white/10 text-purple-200 hover:text-white text-xs font-semibold';
+        });
+        const activeBtn = document.getElementById(`nav-${viewId}`);
+        if (activeBtn) activeBtn.className = 'sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition bg-white/20 text-white shadow-sm text-xs font-semibold';
 
-    // Prestasi: tampilkan juga tanggal, tempat, dan tahun pelajaran
-    const ps = appData.prestasi.filter(p => p.nis === nis);
-    if (ps.length) {
-        document.getElementById('prestasiListContainer').innerHTML = ps.map(p => {
-            const cell = (l, v) => v && v !== '-' ? `<div><span class="text-slate-400 block text-[10px]">${l}</span><strong>${_esc(v)}</strong></div>` : '';
-            return `<div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden flex flex-col justify-between">
+        const map = { dashboard: 'viewDashboard', datasiswa: 'viewDataSiswa', prestasi: 'viewGlobalPrestasi', insiden: 'viewGlobalInsiden', bacaan: 'viewGlobalBacaan', rekapitulasi: 'viewRekapitulasi', statistik: 'viewStatistik', pengaturan: 'viewPengaturan' };
+        showOnly(map[viewId] || 'viewDashboard');
+        document.getElementById('breadcrumbClassContainer').classList.add('hidden');
+        document.getElementById('breadcrumbStudentContainer').classList.add('hidden');
+        if (viewId === 'dashboard') renderDashboard();
+        else if (viewId === 'datasiswa') renderDirectoryStudents();
+        else if (viewId === 'rekapitulasi') renderRekapitulasi();
+        else if (viewId === 'statistik') renderStatistik();
+        lucide.createIcons();
+        if (window.innerWidth < 1024) document.getElementById('sidebar').classList.add('-translate-x-full');
+    }
+
+    /* ===================== DASHBOARD & DAFTAR ===================== */
+    function renderDashboard() {
+        const container = document.getElementById('classListContainer');
+        container.innerHTML = '';
+        document.getElementById('statTotalSiswa').innerText = appData.biodata.length;
+        const classMap = {};
+        appData.biodata.forEach(s => { (classMap[s.kelas] = classMap[s.kelas] || []).push(s); });
+        const classes = Object.keys(classMap).sort(_kelasOrder);
+        document.getElementById('statTotalKelas').innerText = classes.length;
+        if (!classes.length) {
+            container.innerHTML = `<div class="col-span-3 text-center py-12 text-slate-400">Belum ada data kelas. Lihat banner Status Koneksi di atas untuk mengetahui penyebabnya.</div>`;
+            return;
+        }
+        classes.forEach(cls => {
+            const card = document.createElement('div');
+            card.className = 'bg-white p-6 rounded-3xl shadow-sm border border-purple-100 hover:shadow-md hover:border-purple-300 transition cursor-pointer flex flex-col justify-between group';
+            card.onclick = () => selectClass(cls);
+            card.innerHTML = `
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-purple-100 text-purple-800 rounded-2xl flex items-center justify-center font-bold text-lg group-hover:bg-purple-700 group-hover:text-white transition shadow-inner">🏫</div>
+                        <span class="text-xs bg-[#f3edf7] text-purple-900 px-3 py-1 rounded-full font-semibold">${classMap[cls].length} siswa</span>
+                    </div>
+                    <h4 class="font-bold text-slate-800 text-lg group-hover:text-purple-700 transition">${_esc(cls)}</h4>
+                    <p class="text-xs text-slate-500 mt-1">SD Nasional Plus Tunas Global</p>
+                </div>
+                <div class="mt-6 pt-4 border-t border-purple-50 flex items-center justify-between text-xs font-semibold text-purple-700">
+                    <span>Lihat Daftar Siswa</span><i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition"></i>
+                </div>`;
+            container.appendChild(card);
+        });
+        lucide.createIcons();
+    }
+
+    function renderDirectoryStudents(filter = '') {
+        const tbody = document.getElementById('directoryTableBody');
+        const q = filter.toLowerCase().trim();
+        const list = appData.biodata.filter(s => !q || s.nama.toLowerCase().includes(q) || s.nis.includes(q));
+        if (!list.length) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-slate-400">Tidak ada data siswa ditemukan.</td></tr>`; return; }
+        tbody.innerHTML = list.map(s => `
+            <tr class="hover:bg-purple-50/50 transition cursor-pointer" onclick="selectStudent('${s.nis}')">
+                <td class="px-6 py-4 font-mono font-bold text-purple-700">${s.nis}</td>
+                <td class="px-6 py-4 font-bold text-slate-800">${_esc(s.nama)}</td>
+                <td class="px-6 py-4 text-slate-600">${_esc(s.kelas)}</td>
+                <td class="px-6 py-4 text-slate-600">${_esc(s.jk)}</td>
+                <td class="px-6 py-4 text-right"><button class="text-xs bg-purple-100 hover:bg-purple-200 text-purple-900 px-3 py-1.5 rounded-xl font-semibold transition">Profil Lengkap →</button></td>
+            </tr>`).join('');
+    }
+
+    function selectClass(className) {
+        activeClass = className;
+        showOnly('viewStudentList');
+        document.getElementById('breadcrumbClassContainer').classList.remove('hidden');
+        document.getElementById('breadcrumbClassContainer').classList.add('flex');
+        document.getElementById('breadcrumbClassText').innerText = className;
+        document.getElementById('breadcrumbStudentContainer').classList.add('hidden');
+        document.getElementById('currentClassName').innerText = `Kelas ${className}`;
+        document.getElementById('currentClassYear').innerText = currentYear;
+        document.getElementById('classSearchInput').value = '';
+        renderClassStudents();
+    }
+
+    function renderClassStudents(searchFilter = '') {
+        const q = searchFilter.toLowerCase().trim();
+        const students = appData.biodata.filter(s => s.kelas === activeClass && (!q || s.nama.toLowerCase().includes(q) || s.nis.includes(q)));
+        document.getElementById('currentClassCount').innerText = students.length;
+        const container = document.getElementById('classStudentGrid');
+        container.innerHTML = '';
+        if (!students.length) { container.innerHTML = `<div class="col-span-3 text-center py-12 text-slate-400">Tidak ada siswa ditemukan di kelas ini.</div>`; return; }
+        students.forEach(student => {
+            const card = document.createElement('div');
+            card.className = 'bg-white p-5 rounded-2xl shadow-sm border border-purple-100 hover:border-purple-300 hover:shadow-md transition cursor-pointer flex items-center justify-between';
+            card.onclick = () => selectStudent(student.nis);
+            card.innerHTML = `
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-800 font-bold flex items-center justify-center text-base shadow-inner">${_esc(student.nama.charAt(0))}</div>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 leading-snug">${_esc(student.nama)}</h4>
+                        <p class="text-xs text-slate-500 mt-0.5 font-mono">NIS/NIPD: <strong class="text-slate-700">${student.nis}</strong></p>
+                        <span class="inline-block mt-1.5 text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-semibold">Aktif • ${_esc(student.kelas)}</span>
+                    </div>
+                </div>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>`;
+            container.appendChild(card);
+        });
+        lucide.createIcons();
+    }
+    function filterClassStudents(query) { renderClassStudents(query); }
+
+    function handleGlobalSearch(query) {
+        const box = document.getElementById('globalSearchResults');
+        const q = (query || '').toLowerCase().trim();
+        if (q.length < 2) { box.classList.add('hidden'); box.innerHTML = ''; return; }
+        const hits = appData.biodata.filter(s => s.nama.toLowerCase().includes(q) || s.panggilan.toLowerCase().includes(q) || s.nis.includes(q)).slice(0, 20);
+        box.classList.remove('hidden');
+        box.innerHTML = hits.length ? hits.map(s => `
+            <button class="w-full text-left px-4 py-2.5 hover:bg-purple-50 border-b border-purple-50 last:border-0 flex items-center justify-between gap-3" onclick="document.getElementById('globalSearchResults').classList.add('hidden'); selectStudent('${s.nis}')">
+                <span><strong class="text-sm text-slate-800">${_esc(s.nama)}</strong><span class="block text-xs text-slate-500 font-mono">${s.nis}</span></span>
+                <span class="text-xs text-purple-700 font-semibold whitespace-nowrap">${_esc(s.kelas)}</span>
+            </button>`).join('') : `<div class="px-4 py-3 text-xs text-slate-400">Tidak ada siswa yang cocok.</div>`;
+    }
+
+    /* ===================== PROFIL SISWA ===================== */
+    function selectStudent(nis) {
+        activeStudentNIS = nis;
+        const student = appData.biodata.find(s => s.nis === nis);
+        if (!student) return;
+        showOnly('viewStudentProfile');
+        document.getElementById('breadcrumbClassContainer').classList.remove('hidden');
+        document.getElementById('breadcrumbClassContainer').classList.add('flex');
+        document.getElementById('breadcrumbClassText').innerText = student.kelas;
+        document.getElementById('breadcrumbStudentContainer').classList.remove('hidden');
+        document.getElementById('breadcrumbStudentContainer').classList.add('flex');
+        document.getElementById('breadcrumbStudentText').innerText = student.nama;
+
+        document.getElementById('profileName').innerText = student.nama;
+        document.getElementById('profileNIS').innerText = student.nis;
+        document.getElementById('profileClass').innerText = student.kelas;
+        document.getElementById('profileYear').innerText = student.tahun_ajaran || currentYear;
+        document.getElementById('profileAvatar').innerText = student.nama.charAt(0);
+        activeClass = student.kelas;
+
+        // Biodata
+        const f = (label, value, extra = '') => `<div class="bg-[#fbf9fd] p-4 rounded-2xl border border-purple-100"><span class="text-slate-400 block text-xs">${label}</span><strong class="text-slate-800 ${extra}">${_esc(value || '-')}</strong></div>`;
+        const tel = v => v && v !== '-' ? v : '-';
+        document.getElementById('biodataGridContainer').innerHTML =
+            f('Nama Lengkap', student.nama) + f('Nama Panggilan', student.panggilan) +
+            f('Nomor Induk (NIS/NIPD)', student.nis, 'font-mono text-purple-700') + f('NISN', student.nisn, 'font-mono') +
+            f('Kelas', student.kelas) + f('Jenis Kelamin', student.jk) + f('Tempat, Tanggal Lahir', student.ttl) +
+            f('Agama', student.agama) + f('Alamat', student.alamat) +
+            f('Nama Ayah', student.ayah) + f('Telepon Ayah', tel(student.telAyah)) +
+            f('Nama Ibu', student.ibu) + f('Telepon Ibu', tel(student.telIbu));
+
+        // Riwayat pendidikan
+        document.getElementById('riwayatPendidikanContainer').innerHTML = (student.riwayat && student.riwayat.length)
+            ? student.riwayat.map(r => {
+                const now = r.year === _year(currentYear);
+                return `<div class="flex items-center justify-between p-3.5 ${now ? 'bg-purple-100/70 border-purple-200' : 'bg-[#fbf9fd] border-purple-100'} border rounded-xl text-xs">
+                    <span class="font-bold text-purple-950">${_esc(r.year)}</span>
+                    <span class="${now ? 'bg-purple-700 text-white px-2.5 py-1 rounded-lg font-semibold' : 'text-slate-600'}">${_esc(r.kelas)}${now ? ' ← sedang dilihat' : ''}</span></div>`;
+            }).join('')
+            : '<div class="text-xs text-slate-400 italic">Riwayat kelas belum tersedia.</div>';
+
+        // Prestasi
+        const ps = appData.prestasi.filter(p => p.nis === nis);
+        document.getElementById('countPrestasi').innerText = ps.length;
+        const cell = (l, v) => v && v !== '-' ? `<div><span class="text-slate-400 block text-[10px]">${l}</span><strong>${_esc(v)}</strong></div>` : '';
+        document.getElementById('prestasiListContainer').innerHTML = ps.length ? ps.map(p => `
+            <div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden flex flex-col justify-between">
                 <div class="h-40 bg-slate-100 relative"><img src="${_esc(p.foto)}" alt="Foto" class="w-full h-full object-cover" referrerpolicy="no-referrer" onerror="this.src='https://placehold.co/400x300/684e7d/ffffff?text=Prestasi'"><span class="absolute top-3 right-3 bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow">${_esc(p.pencapaian)}</span></div>
                 <div class="p-5 space-y-2"><h4 class="font-bold text-slate-800 text-sm">${_esc(p.namaLomba)}</h4>
                     <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 pt-2 border-t border-purple-50">
                         ${cell('Kategori', p.kategori)}${cell('Penyelenggara', p.penyelenggara)}${cell('Tanggal', p.tanggal)}${cell('Tempat', p.tempat)}${cell('Tahun pelajaran', [p.tahunPelajaran, p.kelas].filter(Boolean).join(' · '))}
-                    </div></div></div>`;
-        }).join('');
-    }
+                    </div></div></div>`).join('')
+            : `<div class="col-span-2 text-center py-8 text-slate-400 italic bg-[#fbf9fd] rounded-2xl">Belum ada catatan prestasi.</div>`;
 
-    // Insiden: tampilkan ringkasan, upaya, pihak diinfokan, dan bantuan (bisa dibuka/ditutup)
-    const ins = appData.insiden.filter(i => i.student_id === nis).sort((a, b) => _ts(b.tanggal) - _ts(a.tanggal));
-    if (ins.length) {
+        // Insiden
+        const ins = appData.insiden.filter(i => i.student_id === nis).sort((a, b) => _ts(b.tanggal) - _ts(a.tanggal));
+        document.getElementById('countInsiden').innerText = ins.length;
         const line = (l, v) => v && v !== '-' ? `<p><strong>${l}:</strong> ${_esc(v)}</p>` : '';
-        document.getElementById('insidenListContainer').innerHTML = ins.map((i, n) => `
+        document.getElementById('insidenListContainer').innerHTML = ins.length ? ins.map((i, n) => `
             <details class="bg-amber-50/50 border border-amber-200 rounded-2xl shadow-sm"${n === 0 ? ' open' : ''}>
                 <summary class="cursor-pointer p-5 flex flex-wrap items-center justify-between gap-2">
                     <span class="text-xs bg-amber-200 text-amber-900 font-bold px-2.5 py-1 rounded-lg">${_esc(i.jenis)}</span>
@@ -1520,25 +901,111 @@ selectStudent = function (nis) {
                 <div class="px-5 pb-5 space-y-2 text-xs text-slate-700">
                     ${line('Peran', i.peran)}${line('Ringkasan', i.catatan)}${line('Upaya penyelesaian', i.tindakan)}
                     ${line('Pihak yang diinfokan', i.pihak)}${line('Bantuan yang diperlukan', i.bantuan)}${line('Detail bantuan', i.detail_bantuan)}${line('Dicatat oleh', i.guru)}
-                </div></details>`).join('');
+                </div></details>`).join('')
+            : `<div class="text-center py-8 text-slate-400 italic bg-[#fbf9fd] rounded-2xl">Tidak ada catatan insiden.</div>`;
+
+        // Bacaan
+        const bc = appData.bacaan.filter(b => b.nis === nis).sort((a, b) => _ts(b.tanggal) - _ts(a.tanggal));
+        document.getElementById('countBacaan').innerText = bc.length;
+        document.getElementById('summaryTotalBuku').innerText = `${bc.length} Buku`;
+        document.getElementById('summaryTotalPoin').innerText = `${Math.round(bc.reduce((a, b) => a + _num(b.poin), 0) * 10) / 10} Poin`;
+        document.getElementById('bacaanTableBody').innerHTML = bc.length ? bc.map(b => `
+            <tr class="hover:bg-purple-50/50 transition"><td class="px-4 py-3 text-xs text-slate-600">${_esc(b.tanggal)}</td><td class="px-4 py-3 text-xs font-bold text-slate-800">${_esc(b.judul_buku)}</td><td class="px-4 py-3 text-xs"><span class="bg-purple-100 text-purple-900 px-2 py-0.5 rounded">${_esc(b.level)}</span></td><td class="px-4 py-3 text-xs font-bold text-emerald-600">+${_esc(b.poin)}</td></tr>`).join('')
+            : `<tr><td colspan="4" class="text-center py-8 text-slate-400 italic">Belum ada aktivitas membaca.</td></tr>`;
+
+        switchProfileTab('biodata');
+        lucide.createIcons();
     }
-};
 
-function _esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
-function _ts(s) {
-    const m = String(s).match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
-    if (m) return new Date(+m[3], +m[2] - 1, +m[1]).getTime();
-    const d = Date.parse(s); return isNaN(d) ? 0 : d;
-}
+    function switchProfileTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.profile-tab').forEach(el => {
+            el.className = 'profile-tab px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-purple-200 hover:text-white hover:bg-white/10 flex items-center gap-2 whitespace-nowrap';
+        });
+        document.getElementById(`tabContent-${tabName}`).classList.remove('hidden');
+        document.getElementById(`tabBtn-${tabName}`).className = 'profile-tab px-4 py-2.5 text-xs font-bold rounded-t-xl transition bg-white text-purple-950 flex items-center gap-2 shadow-md whitespace-nowrap';
+    }
+    function backToStudentList() { if (activeClass) selectClass(activeClass); else switchSidebarView('dashboard'); }
+    function printStudentReport() { window.print(); }
 
-// Banner status: versi lama error saat dipanggil kedua kali (elemen .bg-purple-600 sudah diganti)
-function updateConnectionBanner(isSuccess, message) {
-    const banner = document.getElementById('connectionStatusBanner');
-    document.getElementById('connectionStatusText').innerText = message;
-    banner.className = isSuccess
-        ? 'bg-emerald-50 border border-emerald-200 p-4 rounded-2xl flex items-center justify-between text-xs text-emerald-900 no-print shadow-sm'
-        : 'bg-amber-50 border border-amber-300 p-4 rounded-2xl flex items-center justify-between text-xs text-amber-900 no-print shadow-sm';
-}
-</script>
+    /* ===================== HALAMAN GLOBAL ===================== */
+    function renderGlobalPrestasi() {
+        const c = document.getElementById('globalPrestasiGrid');
+        if (!appData.prestasi.length) { c.innerHTML = `<div class="col-span-3 text-center py-10 text-slate-400">Belum ada data prestasi.</div>`; return; }
+        c.innerHTML = appData.prestasi.map(p => `
+            <div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden flex flex-col justify-between">
+                <div class="h-40 bg-slate-100 relative"><img src="${_esc(p.foto)}" alt="Foto" class="w-full h-full object-cover" loading="lazy" referrerpolicy="no-referrer" onerror="this.src='https://placehold.co/400x300/684e7d/ffffff?text=Prestasi'"><span class="absolute top-3 right-3 bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow">${_esc(p.pencapaian)}</span></div>
+                <div class="p-5 space-y-2">
+                    <h4 class="font-bold text-slate-800 text-sm">${_esc(p.namaLomba)}</h4>
+                    <p class="text-xs text-purple-700 font-semibold">Siswa: ${_esc(p.namaSiswa || p.nis)}${p.kelas ? ' (' + _esc(p.kelas) + ')' : ''}</p>
+                    <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 pt-2 border-t border-purple-50">
+                        <div><span class="text-slate-400 block text-[10px]">Kategori</span><strong>${_esc(p.kategori)}</strong></div>
+                        <div><span class="text-slate-400 block text-[10px]">Penyelenggara</span><strong>${_esc(p.penyelenggara)}</strong></div>
+                    </div></div></div>`).join('');
+    }
+    function renderGlobalInsiden() {
+        const c = document.getElementById('globalInsidenList');
+        if (!appData.insiden.length) { c.innerHTML = `<div class="text-center py-10 text-slate-400">Tidak ada catatan insiden.</div>`; return; }
+        c.innerHTML = [...appData.insiden].sort((a, b) => _ts(b.tanggal) - _ts(a.tanggal)).map(i => `
+            <div class="bg-white border border-purple-100 p-5 rounded-2xl shadow-sm space-y-2">
+                <div class="flex items-center justify-between"><span class="text-xs bg-amber-100 text-amber-900 font-bold px-2.5 py-1 rounded-lg">${_esc(i.jenis)}</span><span class="text-xs text-slate-500 font-medium">${_esc(i.tanggal)}</span></div>
+                <h4 class="font-bold text-slate-800 text-sm">Siswa: ${_esc(i.nama || i.student_id)}${i.kelas ? ' (' + _esc(i.kelas) + ')' : ''} · ${_esc(i.peran)}</h4>
+                <p class="text-xs text-slate-700"><strong>Ringkasan:</strong> ${_esc(i.catatan)}</p>
+                <p class="text-xs text-slate-500"><strong>Upaya:</strong> ${_esc(i.tindakan)}</p>
+            </div>`).join('');
+    }
+    function renderGlobalBacaan() {
+        const t = document.getElementById('globalBacaanTableBody');
+        if (!appData.bacaan.length) { t.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-slate-400">Belum ada log bacaan.</td></tr>`; return; }
+        t.innerHTML = [...appData.bacaan].sort((a, b) => _ts(b.tanggal) - _ts(a.tanggal)).slice(0, 500).map(b => `
+            <tr class="hover:bg-purple-50/50 transition">
+                <td class="px-4 py-3 text-xs text-slate-600">${_esc(b.tanggal)}</td>
+                <td class="px-4 py-3 text-xs font-bold text-slate-800">${_esc(b.nama_lengkap || b.nis)}</td>
+                <td class="px-4 py-3 text-xs text-slate-600">${_esc(b.kelas)}</td>
+                <td class="px-4 py-3 text-xs font-semibold text-slate-800">${_esc(b.judul_buku)}</td>
+                <td class="px-4 py-3 text-xs"><span class="bg-purple-100 text-purple-900 px-2 py-0.5 rounded">${_esc(b.level)}</span></td>
+                <td class="px-4 py-3 text-xs font-bold text-emerald-600">+${_esc(b.poin)} Poin</td>
+            </tr>`).join('');
+    }
+
+    function renderRekapitulasi() {
+        const tbody = document.getElementById('rekapitulasiTableBody');
+        const prestasiBy = {}, bacaBy = {};
+        appData.prestasi.forEach(p => prestasiBy[p.nis] = (prestasiBy[p.nis] || 0) + 1);
+        appData.bacaan.forEach(b => bacaBy[b.nis] = (bacaBy[b.nis] || 0) + 1);
+        const classMap = {};
+        appData.biodata.forEach(s => {
+            const c = classMap[s.kelas] = classMap[s.kelas] || { students: 0, prestasi: 0, bacaan: 0 };
+            c.students++; c.prestasi += prestasiBy[s.nis] || 0; c.bacaan += bacaBy[s.nis] || 0;
+        });
+        const classes = Object.keys(classMap).sort(_kelasOrder);
+        if (!classes.length) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-slate-400">Belum ada data rekapitulasi.</td></tr>`; return; }
+        tbody.innerHTML = classes.map(cls => `
+            <tr class="hover:bg-purple-50/50 transition">
+                <td class="px-6 py-4 font-bold text-slate-800">${_esc(cls)}</td>
+                <td class="px-6 py-4 text-center font-semibold text-purple-700">${classMap[cls].students} Siswa</td>
+                <td class="px-6 py-4 text-center text-emerald-600 font-bold">${classMap[cls].prestasi} Prestasi</td>
+                <td class="px-6 py-4 text-center text-purple-600 font-bold">${classMap[cls].bacaan} Buku</td>
+                <td class="px-6 py-4 text-right"><button onclick="selectClass(decodeURIComponent('${encodeURIComponent(cls)}'))" class="text-xs bg-purple-100 hover:bg-purple-200 text-purple-900 px-3.5 py-1.5 rounded-xl font-semibold transition">Lihat Kelas →</button></td>
+            </tr>`).join('');
+    }
+    function renderStatistik() {
+        document.getElementById('statCardSiswa').innerText = appData.biodata.length;
+        document.getElementById('statCardPrestasi').innerText = appData.prestasi.length;
+        document.getElementById('statCardInsiden').innerText = new Set(appData.insiden.map(i => i.incident_id)).size;
+        document.getElementById('statCardBacaan').innerText = appData.bacaan.length;
+    }
+
+    function saveAndReloadSettings() {
+        SHEET_URLS.biodata  = document.getElementById('settingUrlBiodata').value.trim();
+        SHEET_URLS.prestasi = document.getElementById('settingUrlPrestasi').value.trim();
+        SHEET_URLS.insiden  = document.getElementById('settingUrlInsiden').value.trim();
+        SHEET_URLS.bacaan   = document.getElementById('settingUrlBacaan').value.trim();
+        applyTheme(document.getElementById('settingHexInput').value || '#564563');
+        loadData();
+        switchSidebarView('dashboard');
+        showToast('Pengaturan berhasil disimpan!');
+    }
+    </script>
 </body>
 </html>
