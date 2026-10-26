@@ -836,7 +836,7 @@
         }
         classes.forEach(cls => {
             const card = document.createElement('div');
-            card.className = 'bg-white p-6 rounded-3xl shadow-sm border border-purple-100 hover:shadow-md hover:border-purple-300 transition cursor-pointer flex flex-col justify-between group';
+            card.className = 'bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-purple-100 hover:shadow-md hover:border-purple-300 transition cursor-pointer flex flex-col justify-between group';
             card.onclick = () => selectClass(cls);
             card.innerHTML = `
                 <div>
