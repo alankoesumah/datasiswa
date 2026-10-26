@@ -95,7 +95,14 @@
             </div>
 
             <!-- Status koneksi - lokasi awal di atas (menampilkan diagnosa tiap tab) -->
-            
+            <div id="connectionStatusBanner" class="bg-purple-50/80 border border-purple-200 p-4 rounded-2xl flex items-center justify-between gap-3 text-xs text-purple-950 no-print shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div id="connectionIconBox" class="bg-purple-600 text-white p-2 rounded-xl shadow-sm shrink-0"><i data-lucide="check-circle-2" class="w-4 h-4"></i></div>
+                    <div>
+                        <p class="font-bold">Status Koneksi 4 Google Sheets:</p>
+                        <p id="connectionStatusText" class="opacity-90">Memuat data…</p>
+                    </div>
+                    
                 </div>
                 <button onclick="refreshData()" class="bg-[#6b5878] hover:bg-[#7c6689] text-white px-3.5 py-2 rounded-xl font-medium transition shadow-sm whitespace-nowrap">Muat Ulang Data</button>
             </div>
@@ -409,13 +416,7 @@
     </div>
 
      <!-- status koneksi -->
-<div id="connectionStatusBanner" class="bg-purple-50/80 border border-purple-200 p-4 rounded-2xl flex items-center justify-between gap-3 text-xs text-purple-950 no-print shadow-sm">
-                <div class="flex items-center gap-3">
-                    <div id="connectionIconBox" class="bg-purple-600 text-white p-2 rounded-xl shadow-sm shrink-0"><i data-lucide="check-circle-2" class="w-4 h-4"></i></div>
-                    <div>
-                        <p class="font-bold">Status Koneksi 4 Google Sheets:</p>
-                        <p id="connectionStatusText" class="opacity-90">Memuat data…</p>
-                    </div>
+
      <!-- status koneksi -->
     <style id="dynamicThemeStyle"></style>
 
