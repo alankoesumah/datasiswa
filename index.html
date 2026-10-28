@@ -807,10 +807,9 @@ async function uploadStudentPhoto(event, nis) {
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', 'foto_siswa'); // Pastikan ini sama dengan nama preset di Cloudinary Anda
+    formData.append('upload_preset', 'foto_siswa'); // Pastikan sesuai nama preset Anda
 
     try {
-        // Ganti 'cloud_name_anda_di_sini' dengan Cloud Name asli Anda dari Dashboard Cloudinary
         const response = await fetch('https://api.cloudinary.com/v1_1/wfxtt49a/image/upload', {
             method: 'POST',
             body: formData
@@ -821,23 +820,28 @@ async function uploadStudentPhoto(event, nis) {
         if (data.secure_url) {
             const photoUrl = data.secure_url;
 
+            // 1. Simpan ke localStorage sebagai cadangan instan
             let studentPhotos = {};
             try { studentPhotos = JSON.parse(localStorage.getItem('student_photos') || '{}'); } catch(e){}
             studentPhotos[nis] = photoUrl;
             localStorage.setItem('student_photos', JSON.stringify(studentPhotos));
 
+            // 2. Perbarui data di memori aplikasi secara real-time (baik di daftar kelas maupun profil)
             const studentObj = appData.biodata.find(s => s.nis === nis);
             if (studentObj) studentObj.foto = photoUrl;
 
-            showToast('Foto berhasil diunggah & disimpan!');
+            showToast('Foto berhasil diunggah!');
             
+            // Render ulang tampilan kelas & profil jika sedang dibuka
             if (activeClass) renderClassStudents(document.getElementById('classSearchInput').value);
+            if (activeStudentNIS === nis) selectStudent(nis);
+
         } else {
             throw new Error('Gagal mendapatkan URL dari Cloudinary');
         }
     } catch (err) {
         console.error(err);
-        showToast('Gagal mengunggah foto. Periksa koneksi atau konfigurasi Cloudinary.');
+        showToast('Gagal mengunggah foto. Periksa koneksi Cloudinary.');
     }
 }
            
