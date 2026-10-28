@@ -799,6 +799,48 @@ return warn;
 
 function changeYear(year) { currentYear = year; activeClass = null; loadData(); switchSidebarView('dashboard'); }
 
+async function uploadStudentPhoto(event, nis) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    showToast('Mengunggah foto ke Cloudinary...');
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'foto_siswa'); // Pastikan ini sama dengan nama preset di Cloudinary Anda
+
+    try {
+        // Ganti 'cloud_name_anda_di_sini' dengan Cloud Name asli Anda dari Dashboard Cloudinary
+        const response = await fetch('https://api.cloudinary.com/v1_1/wfxtt49a/image/upload', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.secure_url) {
+            const photoUrl = data.secure_url;
+
+            let studentPhotos = {};
+            try { studentPhotos = JSON.parse(localStorage.getItem('student_photos') || '{}'); } catch(e){}
+            studentPhotos[nis] = photoUrl;
+            localStorage.setItem('student_photos', JSON.stringify(studentPhotos));
+
+            const studentObj = appData.biodata.find(s => s.nis === nis);
+            if (studentObj) studentObj.foto = photoUrl;
+
+            showToast('Foto berhasil diunggah & disimpan!');
+            
+            if (activeClass) renderClassStudents(document.getElementById('classSearchInput').value);
+        } else {
+            throw new Error('Gagal mendapatkan URL dari Cloudinary');
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('Gagal mengunggah foto. Periksa koneksi atau konfigurasi Cloudinary.');
+    }
+}
+           
 /* ===================== NAVIGASI ===================== */
 const ALL_VIEWS = ['viewDashboard', 'viewDataSiswa', 'viewStudentList', 'viewStudentProfile', 'viewGlobalPrestasi', 'viewGlobalInsiden', 'viewGlobalBacaan', 'viewRekapitulasi', 'viewStatistik', 'viewPengaturan'];
 function showOnly(id) { ALL_VIEWS.forEach(v => document.getElementById(v).classList.toggle('hidden', v !== id)); window.scrollTo(0, 0); }
@@ -893,20 +935,39 @@ const container = document.getElementById('classStudentGrid');
 container.innerHTML = '';
 if (!students.length) { container.innerHTML = `<div class="col-span-3 text-center py-12 text-slate-400">Tidak ada siswa ditemukan di kelas ini.</div>`; return; }
 students.forEach(student => {
-const card = document.createElement('div');
-card.className = 'bg-white p-5 rounded-2xl shadow-sm border border-purple-100 hover:border-purple-300 hover:shadow-md transition cursor-pointer flex items-center justify-between';
-card.onclick = () => selectStudent(student.nis);
-card.innerHTML = `
-               <div class="flex items-center space-x-4">
-                   <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-800 font-bold flex items-center justify-center text-base shadow-inner">${_esc(student.nama.charAt(0))}</div>
-                   <div>
-                       <h4 class="text-sm font-bold text-slate-800 leading-snug">${_esc(student.nama)}</h4>
-                       <p class="text-xs text-slate-500 mt-0.5 font-mono">NIS/NIPD: <strong class="text-slate-700">${student.nis}</strong></p>
-                       <span class="inline-block mt-1.5 text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-semibold">Aktif • ${_esc(student.kelas)}</span>
-                   </div>
-               </div>
-               <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>`;
-container.appendChild(card);
+    // Cek apakah siswa sudah punya foto (dari data atau localStorage)
+    let studentPhotos = {};
+    try { studentPhotos = JSON.parse(localStorage.getItem('student_photos') || '{}'); } catch(e){}
+    const fotoUrl = student.foto || studentPhotos[student.nis] || '';
+
+    // Tentukan isi thumbnail: Foto atau Inisial Huruf
+    const thumbnailHTML = fotoUrl 
+        ? `<img src="${_esc(fotoUrl)}" alt="${_esc(student.nama)}" class="w-full h-full object-cover rounded-2xl">`
+        : `<span class="font-bold text-base text-purple-800">${_esc(student.nama.charAt(0))}</span>`;
+
+    const card = document.createElement('div');
+    card.className = 'bg-white p-5 rounded-2xl shadow-sm border border-purple-100 hover:border-purple-300 hover:shadow-md transition cursor-pointer flex items-center justify-between';
+    card.onclick = () => selectStudent(student.nis);
+    
+    card.innerHTML = `
+        <div class="flex items-center space-x-4">
+            <!-- Thumbnail dengan tombol Edit Foto (Kamera) -->
+            <div class="relative w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center shadow-inner overflow-hidden group/thumb shrink-0">
+                ${thumbnailHTML}
+                <!-- Tombol Overlay Edit Foto -->
+                <label onclick="event.stopPropagation()" class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover/thumb:opacity-100 transition cursor-pointer text-white" title="Ganti Foto Siswa">
+                    <i data-lucide="camera" class="w-4 h-4"></i>
+                    <input type="file" accept="image/*" class="hidden" onchange="uploadStudentPhoto(event, '${student.nis}')">
+                </label>
+            </div>
+            <div>
+                <h4 class="text-sm font-bold text-slate-800 leading-snug">${_esc(student.nama)}</h4>
+                <p class="text-xs text-slate-500 mt-0.5 font-mono">NIS/NIPD: <strong class="text-slate-700">${student.nis}</strong></p>
+                <span class="inline-block mt-1.5 text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-semibold">Aktif • ${_esc(student.kelas)}</span>
+            </div>
+        </div>
+        <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>`;
+    container.appendChild(card);
 });
 lucide.createIcons();
 }
