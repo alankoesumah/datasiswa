@@ -702,7 +702,8 @@ nisn: g(/^nisn$/) || '-',
 jk: jk === 'L' ? 'Laki-laki' : jk === 'P' ? 'Perempuan' : (jk || '-'),
 ttl: [g(/^tempatlahir/), g(/^tgllahir|^tanggallahir/)].filter(Boolean).join(', ') || '-',
 agama: g(/^agama/) || '-',
-alamat: g(/^alamat/) || '-',
+alamat: g(/^alamatberdasarkk|^alamat$/) || '-',
+domisili: g(/^domisili/) || '-',
 ayah: ayah || '-', telAyah: telA || '-', ibu: ibu || '-', telIbu: telI || '-'
 });
 });
@@ -951,7 +952,8 @@ document.getElementById('biodataGridContainer').innerHTML =
 f('Nama Lengkap', student.nama) + f('Nama Panggilan', student.panggilan) +
 f('Nomor Induk (NIS/NIPD)', student.nis, 'font-mono text-purple-700') + f('NISN', student.nisn, 'font-mono') +
 f('Kelas', student.kelas) + f('Jenis Kelamin', student.jk) + f('Tempat, Tanggal Lahir', student.ttl) +
-f('Agama', student.agama) + f('Alamat', student.alamat) +
+f('Agama', student.agama) + f('Alamat Berdasar KK', student.alamat) +
+f('Domisili', student.domisili) +
 f('Nama Ayah', student.ayah) + f('Telepon Ayah', tel(student.telAyah)) +
 f('Nama Ibu', student.ibu) + f('Telepon Ibu', tel(student.telIbu));
 
