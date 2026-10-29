@@ -187,7 +187,14 @@ details > summary::-webkit-details-marker { display: none; }
 <button onclick="backToStudentList()" class="bg-white/10 hover:bg-white/20 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-white/15"><i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali</button>
 </div>
 <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 pt-10 sm:pt-0">
-<div id="profileAvatar" class="w-20 h-20 bg-white/10 border-2 border-white/30 rounded-2xl flex items-center justify-center text-3xl font-bold tracking-wider shadow-inner">S</div>
+<!-- Avatar / Foto siswa + tombol ganti foto -->
+<div class="relative w-20 h-20 shrink-0">
+<div id="profileAvatar" class="w-20 h-20 bg-white/10 border-2 border-white/30 rounded-2xl flex items-center justify-center text-3xl font-bold tracking-wider shadow-inner overflow-hidden">S</div>
+<label class="absolute -bottom-1 -right-1 bg-white text-purple-800 rounded-full p-1.5 shadow cursor-pointer no-print" title="Ganti Foto">
+<i data-lucide="camera" class="w-4 h-4"></i>
+<input type="file" accept="image/*" class="hidden" onchange="uploadStudentPhoto(event, activeStudentNIS)">
+</label>
+</div>
 <div>
 <h2 id="profileName" class="text-2xl font-bold leading-tight">Nama Siswa</h2>
 <div class="flex flex-wrap items-center gap-2.5 mt-2.5 text-xs text-purple-200">
@@ -424,7 +431,7 @@ details > summary::-webkit-details-marker { display: none; }
 
 <script>
 /* ===================== KONFIGURASI ===================== */
-const APP_VERSION = 'Versi 2 · 1 Okt 2026';
+const APP_VERSION = 'Versi 3 · 29 Okt 2026';
 
 let SHEET_URLS = {
 biodata:  'https://docs.google.com/spreadsheets/d/1HIld6F9AM9LMKdZnWClrH3d8avQ3_4BXoTYZn-22Oqc/edit',
@@ -443,6 +450,12 @@ terlibat:      'Siswa_terlibat',
 bacaanMaster:  'Master_Siswa',
 bacaanLog:     'Log_Baca'
 };
+
+// ===== FOTO SISWA =====
+// URL Web App dari Google Apps Script (Deploy > New deployment > Web app), berakhiran /exec
+const SCRIPT_URL = 'https://script.google.com/macros/s/ISI_DENGAN_URL_ANDA/exec';
+// Pengaturan Cloudinary (upload preset harus bertipe "Unsigned")
+const CLOUD_NAME = 'wfxtt49a', UPLOAD_PRESET = 'foto_siswa';
 
 let appData = { biodata: [], prestasi: [], insiden: [], bacaan: [] };
 let currentYear = '2026/2027';
@@ -539,10 +552,10 @@ return '#' + (0x1000000 + (R < 255 ? R < 0 ? 0 : R : 255) * 0x10000 + (G < 255 ?
 function applyTheme(hex) {
 if (!/^#[0-9a-f]{6}$/i.test(hex || '')) hex = '#564563';
 document.getElementById('dynamicThemeStyle').innerHTML = `
-          aside#sidebar { background-color: ${adjustColorBrightness(hex, -20)} !important; border-color: ${adjustColorBrightness(hex, -10)} !important; }
-          header#mainHeader { background-color: ${hex} !important; border-color: ${adjustColorBrightness(hex, 10)} !important; }
-          #heroBanner { background: linear-gradient(to right, ${hex}, ${adjustColorBrightness(hex, 20)}, ${adjustColorBrightness(hex, 35)}) !important; }
-          #profileHeaderCard { background: linear-gradient(to right, ${hex}, ${adjustColorBrightness(hex, 25)}) !important; }`;
+           aside#sidebar { background-color: ${adjustColorBrightness(hex, -20)} !important; border-color: ${adjustColorBrightness(hex, -10)} !important; }
+           header#mainHeader { background-color: ${hex} !important; border-color: ${adjustColorBrightness(hex, 10)} !important; }
+           #heroBanner { background: linear-gradient(to right, ${hex}, ${adjustColorBrightness(hex, 20)}, ${adjustColorBrightness(hex, 35)}) !important; }
+           #profileHeaderCard { background: linear-gradient(to right, ${hex}, ${adjustColorBrightness(hex, 25)}) !important; }`;
 try { localStorage.setItem('appThemeColor', hex); } catch (e) {}
 }
 function loadSavedTheme() {
@@ -704,7 +717,8 @@ ttl: [g(/^tempatlahir/), g(/^tgllahir|^tanggallahir/)].filter(Boolean).join(', '
 agama: g(/^agama/) || '-',
 alamat: g(/^alamatberdasarkk|^alamat$/) || '-',
 domisili: g(/^domisili/) || '-',
-ayah: ayah || '-', telAyah: telA || '-', ibu: ibu || '-', telIbu: telI || '-'
+ayah: ayah || '-', telAyah: telA || '-', ibu: ibu || '-', telIbu: telI || '-',
+foto: (g(/^foto|^urlfoto|^linkfoto/) || '').trim()
 });
 });
 }
@@ -799,53 +813,40 @@ return warn;
 
 function changeYear(year) { currentYear = year; activeClass = null; loadData(); switchSidebarView('dashboard'); }
 
+/* ===================== FOTO SISWA ===================== */
+// Upload ke Cloudinary -> kirim link ke Google Sheet lewat Apps Script -> perbarui tampilan
 async function uploadStudentPhoto(event, nis) {
 const file = event.target.files[0];
+event.target.value = '';
 if (!file) return;
-
-showToast('Mengunggah foto ke Cloudinary...');
-
-const formData = new FormData();
-formData.append('file', file);
-    formData.append('upload_preset', 'foto_siswa'); // Pastikan ini sama dengan nama preset di Cloudinary Anda
-    formData.append('upload_preset', 'foto_siswa'); // Pastikan sesuai nama preset Anda
-
+if (!nis) { showToast('Siswa belum dipilih.'); return; }
+showToast('Mengunggah foto...');
 try {
-        // Ganti 'cloud_name_anda_di_sini' dengan Cloud Name asli Anda dari Dashboard Cloudinary
-const response = await fetch('https://api.cloudinary.com/v1_1/wfxtt49a/image/upload', {
-method: 'POST',
-body: formData
+const fd = new FormData();
+fd.append('file', file);
+fd.append('upload_preset', UPLOAD_PRESET);
+const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
+const data = await res.json();
+if (!data.secure_url) throw new Error((data.error && data.error.message) || 'Cloudinary tidak mengembalikan URL');
+
+// Foto dipotong kotak 400px, fokus ke wajah, ukuran dikecilkan otomatis
+const url = data.secure_url.replace('/upload/', '/upload/c_fill,g_face,w_400,h_400,q_auto,f_auto/');
+
+// Simpan link ke kolom "Foto" di Google Sheet (lewat Google Apps Script)
+await fetch(SCRIPT_URL, {
+method: 'POST', mode: 'no-cors',
+headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+body: JSON.stringify({ nis, url })
 });
 
-const data = await response.json();
-
-if (data.secure_url) {
-const photoUrl = data.secure_url;
-
-            // 1. Simpan ke localStorage sebagai cadangan instan
-let studentPhotos = {};
-try { studentPhotos = JSON.parse(localStorage.getItem('student_photos') || '{}'); } catch(e){}
-studentPhotos[nis] = photoUrl;
-localStorage.setItem('student_photos', JSON.stringify(studentPhotos));
-
-            // 2. Perbarui data di memori aplikasi secara real-time (baik di daftar kelas maupun profil)
-const studentObj = appData.biodata.find(s => s.nis === nis);
-if (studentObj) studentObj.foto = photoUrl;
-
-            showToast('Foto berhasil diunggah & disimpan!');
-            showToast('Foto berhasil diunggah!');
-
-            // Render ulang tampilan kelas & profil jika sedang dibuka
-if (activeClass) renderClassStudents(document.getElementById('classSearchInput').value);
-            if (activeStudentNIS === nis) selectStudent(nis);
-
-} else {
-throw new Error('Gagal mendapatkan URL dari Cloudinary');
-}
+// Perbarui tampilan langsung
+appData.biodata.filter(s => s.nis === nis).forEach(s => { s.foto = url; });
+showToast('Foto berhasil disimpan!');
+if (!document.getElementById('viewStudentList').classList.contains('hidden')) renderClassStudents(document.getElementById('classSearchInput').value);
+if (!document.getElementById('viewStudentProfile').classList.contains('hidden') && activeStudentNIS === nis) selectStudent(nis);
 } catch (err) {
 console.error(err);
-        showToast('Gagal mengunggah foto. Periksa koneksi atau konfigurasi Cloudinary.');
-        showToast('Gagal mengunggah foto. Periksa koneksi Cloudinary.');
+showToast('Gagal: ' + err.message);
 }
 }
 
@@ -890,18 +891,15 @@ const card = document.createElement('div');
 card.className = 'bg-white p-3.5 sm:p-4 rounded-2xl shadow-sm border border-purple-100 hover:shadow-md hover:border-purple-300 transition cursor-pointer flex flex-col justify-between group';
 card.onclick = () => selectClass(cls);
 card.innerHTML = `
-              <div>
-                   <div class="flex items-center justify-between">
-                       <!-- Nama Kelas di sisi kiri -->
-                       <h4 class="font-bold text-slate-800 text-base group-hover:text-purple-700 transition">${_esc(cls)}</h4>
-                       
-                       <!-- Jumlah Siswa di sisi kanan -->
-                       <span class="text-xs bg-[#f3edf7] text-purple-900 px-2.5 py-0.5 rounded-full font-semibold">${classMap[cls].length} siswa</span>
-                   </div>
-               </div>
-               <div class="mt-2.5 pt-2.5 border-t border-purple-50 flex items-center justify-between text-xs font-semibold text-purple-700">
-                   <span>Lihat Daftar Siswa</span><i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition"></i>
-               </div>`;
+               <div>
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-slate-800 text-base group-hover:text-purple-700 transition">${_esc(cls)}</h4>
+                        <span class="text-xs bg-[#f3edf7] text-purple-900 px-2.5 py-0.5 rounded-full font-semibold">${classMap[cls].length} siswa</span>
+                    </div>
+                </div>
+                <div class="mt-2.5 pt-2.5 border-t border-purple-50 flex items-center justify-between text-xs font-semibold text-purple-700">
+                    <span>Lihat Daftar Siswa</span><i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition"></i>
+                </div>`;
 container.appendChild(card);
 });
 lucide.createIcons();
@@ -913,13 +911,13 @@ const q = filter.toLowerCase().trim();
 const list = appData.biodata.filter(s => !q || s.nama.toLowerCase().includes(q) || s.nis.includes(q));
 if (!list.length) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-slate-400">Tidak ada data siswa ditemukan.</td></tr>`; return; }
 tbody.innerHTML = list.map(s => `
-          <tr class="hover:bg-purple-50/50 transition cursor-pointer" onclick="selectStudent('${s.nis}')">
-              <td class="px-6 py-4 font-mono font-bold text-purple-700">${s.nis}</td>
-              <td class="px-6 py-4 font-bold text-slate-800">${_esc(s.nama)}</td>
-              <td class="px-6 py-4 text-slate-600">${_esc(s.kelas)}</td>
-              <td class="px-6 py-4 text-slate-600">${_esc(s.jk)}</td>
-              <td class="px-6 py-4 text-right"><button class="text-xs bg-purple-100 hover:bg-purple-200 text-purple-900 px-3 py-1.5 rounded-xl font-semibold transition">Profil Lengkap →</button></td>
-          </tr>`).join('');
+           <tr class="hover:bg-purple-50/50 transition cursor-pointer" onclick="selectStudent('${s.nis}')">
+               <td class="px-6 py-4 font-mono font-bold text-purple-700">${s.nis}</td>
+               <td class="px-6 py-4 font-bold text-slate-800">${_esc(s.nama)}</td>
+               <td class="px-6 py-4 text-slate-600">${_esc(s.kelas)}</td>
+               <td class="px-6 py-4 text-slate-600">${_esc(s.jk)}</td>
+               <td class="px-6 py-4 text-right"><button class="text-xs bg-purple-100 hover:bg-purple-200 text-purple-900 px-3 py-1.5 rounded-xl font-semibold transition">Profil Lengkap →</button></td>
+           </tr>`).join('');
 }
 
 function selectClass(className) {
@@ -943,14 +941,9 @@ const container = document.getElementById('classStudentGrid');
 container.innerHTML = '';
 if (!students.length) { container.innerHTML = `<div class="col-span-3 text-center py-12 text-slate-400">Tidak ada siswa ditemukan di kelas ini.</div>`; return; }
 students.forEach(student => {
-// Cek apakah siswa sudah punya foto (dari data atau localStorage)
-let studentPhotos = {};
-try { studentPhotos = JSON.parse(localStorage.getItem('student_photos') || '{}'); } catch(e){}
-const fotoUrl = student.foto || studentPhotos[student.nis] || '';
-
-// Tentukan isi thumbnail: Foto atau Inisial Huruf
-const thumbnailHTML = fotoUrl 
-? `<img src="${_esc(fotoUrl)}" alt="${_esc(student.nama)}" class="w-full h-full object-cover rounded-2xl">`
+// Foto diambil dari kolom "Foto" di Google Sheet; jika kosong tampilkan inisial
+const thumbnailHTML = student.foto
+? `<img src="${_esc(student.foto)}" alt="${_esc(student.nama)}" class="w-full h-full object-cover" referrerpolicy="no-referrer">`
 : `<span class="font-bold text-base text-purple-800">${_esc(student.nama.charAt(0))}</span>`;
 
 const card = document.createElement('div');
@@ -958,23 +951,22 @@ card.className = 'bg-white p-5 rounded-2xl shadow-sm border border-purple-100 ho
 card.onclick = () => selectStudent(student.nis);
 
 card.innerHTML = `
-       <div class="flex items-center space-x-4">
-           <!-- Thumbnail dengan tombol Edit Foto (Kamera) -->
-           <div class="relative w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center shadow-inner overflow-hidden group/thumb shrink-0">
-               ${thumbnailHTML}
-               <!-- Tombol Overlay Edit Foto -->
-               <label onclick="event.stopPropagation()" class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover/thumb:opacity-100 transition cursor-pointer text-white" title="Ganti Foto Siswa">
-                   <i data-lucide="camera" class="w-4 h-4"></i>
-                   <input type="file" accept="image/*" class="hidden" onchange="uploadStudentPhoto(event, '${student.nis}')">
-               </label>
-           </div>
-           <div>
-               <h4 class="text-sm font-bold text-slate-800 leading-snug">${_esc(student.nama)}</h4>
-               <p class="text-xs text-slate-500 mt-0.5 font-mono">NIS/NIPD: <strong class="text-slate-700">${student.nis}</strong></p>
-               <span class="inline-block mt-1.5 text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-semibold">Aktif • ${_esc(student.kelas)}</span>
-           </div>
-       </div>
-       <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>`;
+        <div class="flex items-center space-x-4">
+            <div class="relative w-12 h-12 shrink-0">
+                <div class="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center shadow-inner overflow-hidden">${thumbnailHTML}</div>
+                <!-- Tombol ganti foto: selalu terlihat (bisa dipakai di HP) -->
+                <label onclick="event.stopPropagation()" class="absolute -bottom-1 -right-1 bg-purple-700 hover:bg-purple-800 text-white rounded-full p-1 shadow cursor-pointer" title="Ganti Foto Siswa">
+                    <i data-lucide="camera" class="w-3 h-3"></i>
+                    <input type="file" accept="image/*" class="hidden" onchange="uploadStudentPhoto(event, '${student.nis}')">
+                </label>
+            </div>
+            <div>
+                <h4 class="text-sm font-bold text-slate-800 leading-snug">${_esc(student.nama)}</h4>
+                <p class="text-xs text-slate-500 mt-0.5 font-mono">NIS/NIPD: <strong class="text-slate-700">${student.nis}</strong></p>
+                <span class="inline-block mt-1.5 text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-semibold">Aktif • ${_esc(student.kelas)}</span>
+            </div>
+        </div>
+        <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>`;
 container.appendChild(card);
 });
 lucide.createIcons();
@@ -988,10 +980,10 @@ if (q.length < 2) { box.classList.add('hidden'); box.innerHTML = ''; return; }
 const hits = appData.biodata.filter(s => s.nama.toLowerCase().includes(q) || s.panggilan.toLowerCase().includes(q) || s.nis.includes(q)).slice(0, 20);
 box.classList.remove('hidden');
 box.innerHTML = hits.length ? hits.map(s => `
-          <button class="w-full text-left px-4 py-2.5 hover:bg-purple-50 border-b border-purple-50 last:border-0 flex items-center justify-between gap-3" onclick="document.getElementById('globalSearchResults').classList.add('hidden'); selectStudent('${s.nis}')">
-              <span><strong class="text-sm text-slate-800">${_esc(s.nama)}</strong><span class="block text-xs text-slate-500 font-mono">${s.nis}</span></span>
-              <span class="text-xs text-purple-700 font-semibold whitespace-nowrap">${_esc(s.kelas)}</span>
-          </button>`).join('') : `<div class="px-4 py-3 text-xs text-slate-400">Tidak ada siswa yang cocok.</div>`;
+           <button class="w-full text-left px-4 py-2.5 hover:bg-purple-50 border-b border-purple-50 last:border-0 flex items-center justify-between gap-3" onclick="document.getElementById('globalSearchResults').classList.add('hidden'); selectStudent('${s.nis}')">
+               <span><strong class="text-sm text-slate-800">${_esc(s.nama)}</strong><span class="block text-xs text-slate-500 font-mono">${s.nis}</span></span>
+               <span class="text-xs text-purple-700 font-semibold whitespace-nowrap">${_esc(s.kelas)}</span>
+           </button>`).join('') : `<div class="px-4 py-3 text-xs text-slate-400">Tidak ada siswa yang cocok.</div>`;
 }
 
 /* ===================== PROFIL SISWA ===================== */
@@ -1011,7 +1003,10 @@ document.getElementById('profileName').innerText = student.nama;
 document.getElementById('profileNIS').innerText = student.nis;
 document.getElementById('profileClass').innerText = student.kelas;
 document.getElementById('profileYear').innerText = student.tahun_ajaran || currentYear;
-document.getElementById('profileAvatar').innerText = student.nama.charAt(0);
+// Foto profil (atau inisial jika belum ada foto)
+document.getElementById('profileAvatar').innerHTML = student.foto
+? `<img src="${_esc(student.foto)}" alt="${_esc(student.nama)}" class="w-full h-full object-cover" referrerpolicy="no-referrer">`
+: _esc(student.nama.charAt(0));
 activeClass = student.kelas;
 
 // Biodata
@@ -1031,8 +1026,8 @@ document.getElementById('riwayatPendidikanContainer').innerHTML = (student.riway
 ? student.riwayat.map(r => {
 const now = r.year === _year(currentYear);
 return `<div class="flex items-center justify-between p-3.5 ${now ? 'bg-purple-100/70 border-purple-200' : 'bg-[#fbf9fd] border-purple-100'} border rounded-xl text-xs">
-                  <span class="font-bold text-purple-950">${_esc(r.year)}</span>
-                  <span class="${now ? 'bg-purple-700 text-white px-2.5 py-1 rounded-lg font-semibold' : 'text-slate-600'}">${_esc(r.kelas)}${now ? ' ← sedang dilihat' : ''}</span></div>`;
+                   <span class="font-bold text-purple-950">${_esc(r.year)}</span>
+                   <span class="${now ? 'bg-purple-700 text-white px-2.5 py-1 rounded-lg font-semibold' : 'text-slate-600'}">${_esc(r.kelas)}${now ? ' ← sedang dilihat' : ''}</span></div>`;
 }).join('')
 : '<div class="text-xs text-slate-400 italic">Riwayat kelas belum tersedia.</div>';
 
@@ -1041,12 +1036,12 @@ const ps = appData.prestasi.filter(p => p.nis === nis);
 document.getElementById('countPrestasi').innerText = ps.length;
 const cell = (l, v) => v && v !== '-' ? `<div><span class="text-slate-400 block text-[10px]">${l}</span><strong>${_esc(v)}</strong></div>` : '';
 document.getElementById('prestasiListContainer').innerHTML = ps.length ? ps.map(p => `
-          <div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden flex flex-col justify-between">
-              <div class="h-40 bg-slate-100 relative"><img src="${_esc(p.foto)}" alt="Foto" class="w-full h-full object-cover" referrerpolicy="no-referrer" onerror="this.src='https://placehold.co/400x300/684e7d/ffffff?text=Prestasi'"><span class="absolute top-3 right-3 bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow">${_esc(p.pencapaian)}</span></div>
-              <div class="p-5 space-y-2"><h4 class="font-bold text-slate-800 text-sm">${_esc(p.namaLomba)}</h4>
-                  <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 pt-2 border-t border-purple-50">
-                      ${cell('Kategori', p.kategori)}${cell('Penyelenggara', p.penyelenggara)}${cell('Tanggal', p.tanggal)}${cell('Tempat', p.tempat)}${cell('Tahun pelajaran', [p.tahunPelajaran, p.kelas].filter(Boolean).join(' · '))}
-                  </div></div></div>`).join('')
+           <div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden flex flex-col justify-between">
+               <div class="h-40 bg-slate-100 relative"><img src="${_esc(p.foto)}" alt="Foto" class="w-full h-full object-cover" referrerpolicy="no-referrer" onerror="this.src='https://placehold.co/400x300/684e7d/ffffff?text=Prestasi'"><span class="absolute top-3 right-3 bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow">${_esc(p.pencapaian)}</span></div>
+               <div class="p-5 space-y-2"><h4 class="font-bold text-slate-800 text-sm">${_esc(p.namaLomba)}</h4>
+                   <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 pt-2 border-t border-purple-50">
+                       ${cell('Kategori', p.kategori)}${cell('Penyelenggara', p.penyelenggara)}${cell('Tanggal', p.tanggal)}${cell('Tempat', p.tempat)}${cell('Tahun pelajaran', [p.tahunPelajaran, p.kelas].filter(Boolean).join(' · '))}
+                   </div></div></div>`).join('')
 : `<div class="col-span-2 text-center py-8 text-slate-400 italic bg-[#fbf9fd] rounded-2xl">Belum ada catatan prestasi.</div>`;
 
 // Insiden
@@ -1054,15 +1049,15 @@ const ins = appData.insiden.filter(i => i.student_id === nis).sort((a, b) => _ts
 document.getElementById('countInsiden').innerText = ins.length;
 const line = (l, v) => v && v !== '-' ? `<p><strong>${l}:</strong> ${_esc(v)}</p>` : '';
 document.getElementById('insidenListContainer').innerHTML = ins.length ? ins.map((i, n) => `
-          <details class="bg-amber-50/50 border border-amber-200 rounded-2xl shadow-sm"${n === 0 ? ' open' : ''}>
-              <summary class="cursor-pointer p-5 flex flex-wrap items-center justify-between gap-2">
-                  <span class="text-xs bg-amber-200 text-amber-900 font-bold px-2.5 py-1 rounded-lg">${_esc(i.jenis)}</span>
-                  <span class="text-xs text-amber-800 font-medium">${[i.tanggal, i.waktu, i.tempat].filter(Boolean).map(_esc).join(' · ')}</span>
-              </summary>
-              <div class="px-5 pb-5 space-y-2 text-xs text-slate-700">
-                  ${line('Peran', i.peran)}${line('Ringkasan', i.catatan)}${line('Upaya penyelesaian', i.tindakan)}
-                  ${line('Pihak yang diinfokan', i.pihak)}${line('Bantuan yang diperlukan', i.bantuan)}${line('Detail bantuan', i.detail_bantuan)}${line('Dicatat oleh', i.guru)}
-              </div></details>`).join('')
+           <details class="bg-amber-50/50 border border-amber-200 rounded-2xl shadow-sm"${n === 0 ? ' open' : ''}>
+               <summary class="cursor-pointer p-5 flex flex-wrap items-center justify-between gap-2">
+                   <span class="text-xs bg-amber-200 text-amber-900 font-bold px-2.5 py-1 rounded-lg">${_esc(i.jenis)}</span>
+                   <span class="text-xs text-amber-800 font-medium">${[i.tanggal, i.waktu, i.tempat].filter(Boolean).map(_esc).join(' · ')}</span>
+               </summary>
+               <div class="px-5 pb-5 space-y-2 text-xs text-slate-700">
+                   ${line('Peran', i.peran)}${line('Ringkasan', i.catatan)}${line('Upaya penyelesaian', i.tindakan)}
+                   ${line('Pihak yang diinfokan', i.pihak)}${line('Bantuan yang diperlukan', i.bantuan)}${line('Detail bantuan', i.detail_bantuan)}${line('Dicatat oleh', i.guru)}
+               </div></details>`).join('')
 : `<div class="text-center py-8 text-slate-400 italic bg-[#fbf9fd] rounded-2xl">Tidak ada catatan insiden.</div>`;
 
 // Bacaan
@@ -1071,7 +1066,7 @@ document.getElementById('countBacaan').innerText = bc.length;
 document.getElementById('summaryTotalBuku').innerText = `${bc.length} Buku`;
 document.getElementById('summaryTotalPoin').innerText = `${Math.round(bc.reduce((a, b) => a + _num(b.poin), 0) * 10) / 10} Poin`;
 document.getElementById('bacaanTableBody').innerHTML = bc.length ? bc.map(b => `
-          <tr class="hover:bg-purple-50/50 transition"><td class="px-4 py-3 text-xs text-slate-600">${_esc(b.tanggal)}</td><td class="px-4 py-3 text-xs font-bold text-slate-800">${_esc(b.judul_buku)}</td><td class="px-4 py-3 text-xs"><span class="bg-purple-100 text-purple-900 px-2 py-0.5 rounded">${_esc(b.level)}</span></td><td class="px-4 py-3 text-xs font-bold text-emerald-600">+${_esc(b.poin)}</td></tr>`).join('')
+           <tr class="hover:bg-purple-50/50 transition"><td class="px-4 py-3 text-xs text-slate-600">${_esc(b.tanggal)}</td><td class="px-4 py-3 text-xs font-bold text-slate-800">${_esc(b.judul_buku)}</td><td class="px-4 py-3 text-xs"><span class="bg-purple-100 text-purple-900 px-2 py-0.5 rounded">${_esc(b.level)}</span></td><td class="px-4 py-3 text-xs font-bold text-emerald-600">+${_esc(b.poin)}</td></tr>`).join('')
 : `<tr><td colspan="4" class="text-center py-8 text-slate-400 italic">Belum ada aktivitas membaca.</td></tr>`;
 
 switchProfileTab('biodata');
@@ -1094,39 +1089,39 @@ function renderGlobalPrestasi() {
 const c = document.getElementById('globalPrestasiGrid');
 if (!appData.prestasi.length) { c.innerHTML = `<div class="col-span-3 text-center py-10 text-slate-400">Belum ada data prestasi.</div>`; return; }
 c.innerHTML = appData.prestasi.map(p => `
-          <div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden flex flex-col justify-between">
-              <div class="h-40 bg-slate-100 relative"><img src="${_esc(p.foto)}" alt="Foto" class="w-full h-full object-cover" loading="lazy" referrerpolicy="no-referrer" onerror="this.src='https://placehold.co/400x300/684e7d/ffffff?text=Prestasi'"><span class="absolute top-3 right-3 bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow">${_esc(p.pencapaian)}</span></div>
-              <div class="p-5 space-y-2">
-                  <h4 class="font-bold text-slate-800 text-sm">${_esc(p.namaLomba)}</h4>
-                  <p class="text-xs text-purple-700 font-semibold">Siswa: ${_esc(p.namaSiswa || p.nis)}${kelasOf(p.nis, p.kelas) ? ' (' + _esc(kelasOf(p.nis, p.kelas)) + ')' : ''}</p>
-                  <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 pt-2 border-t border-purple-50">
-                      <div><span class="text-slate-400 block text-[10px]">Kategori</span><strong>${_esc(p.kategori)}</strong></div>
-                      <div><span class="text-slate-400 block text-[10px]">Penyelenggara</span><strong>${_esc(p.penyelenggara)}</strong></div>
-                  </div></div></div>`).join('');
+           <div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden flex flex-col justify-between">
+               <div class="h-40 bg-slate-100 relative"><img src="${_esc(p.foto)}" alt="Foto" class="w-full h-full object-cover" loading="lazy" referrerpolicy="no-referrer" onerror="this.src='https://placehold.co/400x300/684e7d/ffffff?text=Prestasi'"><span class="absolute top-3 right-3 bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow">${_esc(p.pencapaian)}</span></div>
+               <div class="p-5 space-y-2">
+                   <h4 class="font-bold text-slate-800 text-sm">${_esc(p.namaLomba)}</h4>
+                   <p class="text-xs text-purple-700 font-semibold">Siswa: ${_esc(p.namaSiswa || p.nis)}${kelasOf(p.nis, p.kelas) ? ' (' + _esc(kelasOf(p.nis, p.kelas)) + ')' : ''}</p>
+                   <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 pt-2 border-t border-purple-50">
+                       <div><span class="text-slate-400 block text-[10px]">Kategori</span><strong>${_esc(p.kategori)}</strong></div>
+                       <div><span class="text-slate-400 block text-[10px]">Penyelenggara</span><strong>${_esc(p.penyelenggara)}</strong></div>
+                   </div></div></div>`).join('');
 }
 function renderGlobalInsiden() {
 const c = document.getElementById('globalInsidenList');
 if (!appData.insiden.length) { c.innerHTML = `<div class="text-center py-10 text-slate-400">Tidak ada catatan insiden.</div>`; return; }
 c.innerHTML = [...appData.insiden].sort((a, b) => _ts(b.tanggal) - _ts(a.tanggal)).map(i => `
-          <div class="bg-white border border-purple-100 p-5 rounded-2xl shadow-sm space-y-2">
-              <div class="flex items-center justify-between"><span class="text-xs bg-amber-100 text-amber-900 font-bold px-2.5 py-1 rounded-lg">${_esc(i.jenis)}</span><span class="text-xs text-slate-500 font-medium">${_esc(i.tanggal)}</span></div>
-              <h4 class="font-bold text-slate-800 text-sm">Siswa: ${_esc(i.nama || i.student_id)}${kelasOf(i.student_id, i.kelas) ? ' (' + _esc(kelasOf(i.student_id, i.kelas)) + ')' : ''} · ${_esc(i.peran)}</h4>
-              <p class="text-xs text-slate-700"><strong>Ringkasan:</strong> ${_esc(i.catatan)}</p>
-              <p class="text-xs text-slate-500"><strong>Upaya:</strong> ${_esc(i.tindakan)}</p>
-          </div>`).join('');
+           <div class="bg-white border border-purple-100 p-5 rounded-2xl shadow-sm space-y-2">
+               <div class="flex items-center justify-between"><span class="text-xs bg-amber-100 text-amber-900 font-bold px-2.5 py-1 rounded-lg">${_esc(i.jenis)}</span><span class="text-xs text-slate-500 font-medium">${_esc(i.tanggal)}</span></div>
+               <h4 class="font-bold text-slate-800 text-sm">Siswa: ${_esc(i.nama || i.student_id)}${kelasOf(i.student_id, i.kelas) ? ' (' + _esc(kelasOf(i.student_id, i.kelas)) + ')' : ''} · ${_esc(i.peran)}</h4>
+               <p class="text-xs text-slate-700"><strong>Ringkasan:</strong> ${_esc(i.catatan)}</p>
+               <p class="text-xs text-slate-500"><strong>Upaya:</strong> ${_esc(i.tindakan)}</p>
+           </div>`).join('');
 }
 function renderGlobalBacaan() {
 const t = document.getElementById('globalBacaanTableBody');
 if (!appData.bacaan.length) { t.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-slate-400">Belum ada log bacaan.</td></tr>`; return; }
 t.innerHTML = [...appData.bacaan].sort((a, b) => _ts(b.tanggal) - _ts(a.tanggal)).slice(0, 500).map(b => `
-          <tr class="hover:bg-purple-50/50 transition">
-              <td class="px-4 py-3 text-xs text-slate-600">${_esc(b.tanggal)}</td>
-              <td class="px-4 py-3 text-xs font-bold text-slate-800">${_esc(b.nama_lengkap || b.nis)}</td>
-              <td class="px-4 py-3 text-xs text-slate-600">${_esc(kelasOf(b.nis, b.kelas))}</td>
-              <td class="px-4 py-3 text-xs font-semibold text-slate-800">${_esc(b.judul_buku)}</td>
-              <td class="px-4 py-3 text-xs"><span class="bg-purple-100 text-purple-900 px-2 py-0.5 rounded">${_esc(b.level)}</span></td>
-              <td class="px-4 py-3 text-xs font-bold text-emerald-600">+${_esc(b.poin)} Poin</td>
-          </tr>`).join('');
+           <tr class="hover:bg-purple-50/50 transition">
+               <td class="px-4 py-3 text-xs text-slate-600">${_esc(b.tanggal)}</td>
+               <td class="px-4 py-3 text-xs font-bold text-slate-800">${_esc(b.nama_lengkap || b.nis)}</td>
+               <td class="px-4 py-3 text-xs text-slate-600">${_esc(kelasOf(b.nis, b.kelas))}</td>
+               <td class="px-4 py-3 text-xs font-semibold text-slate-800">${_esc(b.judul_buku)}</td>
+               <td class="px-4 py-3 text-xs"><span class="bg-purple-100 text-purple-900 px-2 py-0.5 rounded">${_esc(b.level)}</span></td>
+               <td class="px-4 py-3 text-xs font-bold text-emerald-600">+${_esc(b.poin)} Poin</td>
+           </tr>`).join('');
 }
 
 function renderRekapitulasi() {
@@ -1142,13 +1137,13 @@ c.students++; c.prestasi += prestasiBy[s.nis] || 0; c.bacaan += bacaBy[s.nis] ||
 const classes = Object.keys(classMap).sort(_kelasOrder);
 if (!classes.length) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-slate-400">Belum ada data rekapitulasi.</td></tr>`; return; }
 tbody.innerHTML = classes.map(cls => `
-          <tr class="hover:bg-purple-50/50 transition">
-              <td class="px-6 py-4 font-bold text-slate-800">${_esc(cls)}</td>
-              <td class="px-6 py-4 text-center font-semibold text-purple-700">${classMap[cls].students} Siswa</td>
-              <td class="px-6 py-4 text-center text-emerald-600 font-bold">${classMap[cls].prestasi} Prestasi</td>
-              <td class="px-6 py-4 text-center text-purple-600 font-bold">${classMap[cls].bacaan} Buku</td>
-              <td class="px-6 py-4 text-right"><button onclick="selectClass(decodeURIComponent('${encodeURIComponent(cls)}'))" class="text-xs bg-purple-100 hover:bg-purple-200 text-purple-900 px-3.5 py-1.5 rounded-xl font-semibold transition">Lihat Kelas →</button></td>
-          </tr>`).join('');
+           <tr class="hover:bg-purple-50/50 transition">
+               <td class="px-6 py-4 font-bold text-slate-800">${_esc(cls)}</td>
+               <td class="px-6 py-4 text-center font-semibold text-purple-700">${classMap[cls].students} Siswa</td>
+               <td class="px-6 py-4 text-center text-emerald-600 font-bold">${classMap[cls].prestasi} Prestasi</td>
+               <td class="px-6 py-4 text-center text-purple-600 font-bold">${classMap[cls].bacaan} Buku</td>
+               <td class="px-6 py-4 text-right"><button onclick="selectClass(decodeURIComponent('${encodeURIComponent(cls)}'))" class="text-xs bg-purple-100 hover:bg-purple-200 text-purple-900 px-3.5 py-1.5 rounded-xl font-semibold transition">Lihat Kelas →</button></td>
+           </tr>`).join('');
 }
 function renderStatistik() {
 document.getElementById('statCardSiswa').innerText = appData.biodata.length;
