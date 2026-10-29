@@ -205,16 +205,18 @@ details > summary::-webkit-details-marker { display: none; }
 </div>
 </div>
 </div>
-<div class="flex space-x-1.5 mt-8 overflow-x-auto border-b border-white/20 pb-1">
-<button onclick="switchProfileTab('biodata')" id="tabBtn-biodata" class="profile-tab px-4 py-2.5 text-xs font-bold rounded-t-xl transition bg-white text-purple-950 flex items-center gap-2 shadow-md whitespace-nowrap"><i data-lucide="user" class="w-4 h-4 text-purple-700"></i> 1. Biodata</button>
-<button onclick="switchProfileTab('prestasi')" id="tabBtn-prestasi" class="profile-tab px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-purple-200 hover:text-white hover:bg-white/10 flex items-center gap-2 whitespace-nowrap"><i data-lucide="award" class="w-4 h-4 text-emerald-300"></i> 2. Prestasi (<span id="countPrestasi">0</span>)</button>
-<button onclick="switchProfileTab('insiden')" id="tabBtn-insiden" class="profile-tab px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-purple-200 hover:text-white hover:bg-white/10 flex items-center gap-2 whitespace-nowrap"><i data-lucide="alert-triangle" class="w-4 h-4 text-amber-300"></i> 3. Insiden (<span id="countInsiden">0</span>)</button>
-<button onclick="switchProfileTab('bacaan')" id="tabBtn-bacaan" class="profile-tab px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-purple-200 hover:text-white hover:bg-white/10 flex items-center gap-2 whitespace-nowrap"><i data-lucide="book-open" class="w-4 h-4 text-purple-200"></i> 4. Bacaan Buku (<span id="countBacaan">0</span>)</button>
-</div>
 </div>
 
-<div class="bg-white rounded-3xl shadow-sm border border-purple-100 p-6 sm:p-8 min-h-[400px]">
-<div id="tabContent-biodata" class="tab-content space-y-6">
+<!-- Bar tab: menempel di bawah header, klik = scroll ke bagian -->
+<div id="profileTabBar" class="sticky top-16 z-20 bg-white/95 backdrop-blur rounded-2xl border border-purple-100 shadow-sm p-1.5 flex space-x-1.5 overflow-x-auto no-print">
+<button onclick="switchProfileTab('biodata')" id="tabBtn-biodata" class="profile-tab px-4 py-2 text-xs font-bold rounded-xl transition text-purple-800 hover:bg-purple-50 flex items-center gap-2 whitespace-nowrap"><i data-lucide="user" class="w-4 h-4 text-purple-700"></i> 1. Biodata</button>
+<button onclick="switchProfileTab('prestasi')" id="tabBtn-prestasi" class="profile-tab px-4 py-2 text-xs font-bold rounded-xl transition text-purple-800 hover:bg-purple-50 flex items-center gap-2 whitespace-nowrap"><i data-lucide="award" class="w-4 h-4 text-emerald-600"></i> 2. Prestasi (<span id="countPrestasi">0</span>)</button>
+<button onclick="switchProfileTab('insiden')" id="tabBtn-insiden" class="profile-tab px-4 py-2 text-xs font-bold rounded-xl transition text-purple-800 hover:bg-purple-50 flex items-center gap-2 whitespace-nowrap"><i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i> 3. Insiden (<span id="countInsiden">0</span>)</button>
+<button onclick="switchProfileTab('bacaan')" id="tabBtn-bacaan" class="profile-tab px-4 py-2 text-xs font-bold rounded-xl transition text-purple-800 hover:bg-purple-50 flex items-center gap-2 whitespace-nowrap"><i data-lucide="book-open" class="w-4 h-4 text-purple-700"></i> 4. Bacaan Buku (<span id="countBacaan">0</span>)</button>
+</div>
+
+<div class="bg-white rounded-3xl shadow-sm border border-purple-100 p-6 sm:p-8">
+<div id="tabContent-biodata" class="tab-content space-y-6 scroll-mt-32">
 <div class="border-b border-purple-50 pb-4">
 <h3 class="font-bold text-slate-800 text-base flex items-center gap-2"><i data-lucide="user-check" class="w-5 h-5 text-purple-700"></i> Data Master & Biodata Siswa</h3>
 <p class="text-xs text-slate-500 mt-0.5">Sumber data: Database Siswa (Master Key NIS/NIPD)</p>
@@ -226,7 +228,7 @@ details > summary::-webkit-details-marker { display: none; }
 </div>
 </div>
 
-<div id="tabContent-prestasi" class="tab-content hidden space-y-6">
+<div id="tabContent-prestasi" class="tab-content space-y-6 mt-10 pt-10 border-t border-purple-100 scroll-mt-32">
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-purple-50 pb-4">
 <div>
 <h3 class="font-bold text-slate-800 text-base flex items-center gap-2"><i data-lucide="award" class="w-5 h-5 text-emerald-600"></i> Riwayat Prestasi & Pencapaian</h3>
@@ -237,7 +239,7 @@ details > summary::-webkit-details-marker { display: none; }
 <div id="prestasiListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
 </div>
 
-<div id="tabContent-insiden" class="tab-content hidden space-y-6">
+<div id="tabContent-insiden" class="tab-content space-y-6 mt-10 pt-10 border-t border-purple-100 scroll-mt-32">
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-purple-50 pb-4">
 <div>
 <h3 class="font-bold text-slate-800 text-base flex items-center gap-2"><i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600"></i> Jurnal Peristiwa & Catatan Insiden</h3>
@@ -248,7 +250,7 @@ details > summary::-webkit-details-marker { display: none; }
 <div id="insidenListContainer" class="space-y-4"></div>
 </div>
 
-<div id="tabContent-bacaan" class="tab-content hidden space-y-6">
+<div id="tabContent-bacaan" class="tab-content space-y-6 mt-10 pt-10 border-t border-purple-100 scroll-mt-32">
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-purple-50 pb-4">
 <div>
 <h3 class="font-bold text-slate-800 text-base flex items-center gap-2"><i data-lucide="book-open" class="w-5 h-5 text-purple-700"></i> Aktivitas Membaca & Literasi</h3>
@@ -431,7 +433,7 @@ details > summary::-webkit-details-marker { display: none; }
 
 <script>
 /* ===================== KONFIGURASI ===================== */
-const APP_VERSION = 'Versi 3 · 29 Okt 2026';
+const APP_VERSION = 'Versi 4 · 29 Okt 2026';
 
 let SHEET_URLS = {
 biodata:  'https://docs.google.com/spreadsheets/d/1HIld6F9AM9LMKdZnWClrH3d8avQ3_4BXoTYZn-22Oqc/edit',
@@ -453,7 +455,7 @@ bacaanLog:     'Log_Baca'
 
 // ===== FOTO SISWA =====
 // URL Web App dari Google Apps Script (Deploy > New deployment > Web app), berakhiran /exec
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwfT_kT21d3rPSttih_nxJYStV1UqVvFD2kGlfcPEv4E54yHGwvWz2CNdtWshUNGnEN/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/ISI_DENGAN_URL_ANDA/exec';
 // Pengaturan Cloudinary (upload preset harus bertipe "Unsigned")
 const CLOUD_NAME = 'wfxtt49a', UPLOAD_PRESET = 'foto_siswa';
 
@@ -1069,18 +1071,39 @@ document.getElementById('bacaanTableBody').innerHTML = bc.length ? bc.map(b => `
            <tr class="hover:bg-purple-50/50 transition"><td class="px-4 py-3 text-xs text-slate-600">${_esc(b.tanggal)}</td><td class="px-4 py-3 text-xs font-bold text-slate-800">${_esc(b.judul_buku)}</td><td class="px-4 py-3 text-xs"><span class="bg-purple-100 text-purple-900 px-2 py-0.5 rounded">${_esc(b.level)}</span></td><td class="px-4 py-3 text-xs font-bold text-emerald-600">+${_esc(b.poin)}</td></tr>`).join('')
 : `<tr><td colspan="4" class="text-center py-8 text-slate-400 italic">Belum ada aktivitas membaca.</td></tr>`;
 
-switchProfileTab('biodata');
+setActiveProfileTab('biodata');
 lucide.createIcons();
 }
 
-function switchProfileTab(tabName) {
-document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+let _tabLock = false, _tabLockTimer = null;
+const PROFILE_TABS = ['biodata', 'prestasi', 'insiden', 'bacaan'];
+function setActiveProfileTab(tabName) {
 document.querySelectorAll('.profile-tab').forEach(el => {
-el.className = 'profile-tab px-4 py-2.5 text-xs font-bold rounded-t-xl transition text-purple-200 hover:text-white hover:bg-white/10 flex items-center gap-2 whitespace-nowrap';
+el.className = 'profile-tab px-4 py-2 text-xs font-bold rounded-xl transition text-purple-800 hover:bg-purple-50 flex items-center gap-2 whitespace-nowrap';
 });
-document.getElementById(`tabContent-${tabName}`).classList.remove('hidden');
-document.getElementById(`tabBtn-${tabName}`).className = 'profile-tab px-4 py-2.5 text-xs font-bold rounded-t-xl transition bg-white text-purple-950 flex items-center gap-2 shadow-md whitespace-nowrap';
+const b = document.getElementById(`tabBtn-${tabName}`);
+if (b) b.className = 'profile-tab px-4 py-2 text-xs font-bold rounded-xl transition bg-purple-700 text-white shadow flex items-center gap-2 whitespace-nowrap';
 }
+// Klik tab = scroll halus ke bagian yang dipilih
+function switchProfileTab(tabName) {
+const el = document.getElementById(`tabContent-${tabName}`);
+if (!el) return;
+setActiveProfileTab(tabName);
+_tabLock = true; clearTimeout(_tabLockTimer);
+_tabLockTimer = setTimeout(() => { _tabLock = false; }, 900);
+el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+// Saat di-scroll manual, tab ikut menyala sesuai bagian yang sedang terlihat
+window.addEventListener('scroll', () => {
+if (_tabLock || document.getElementById('viewStudentProfile').classList.contains('hidden')) return;
+let current = 'biodata';
+PROFILE_TABS.forEach(t => {
+const el = document.getElementById(`tabContent-${t}`);
+if (el && el.getBoundingClientRect().top <= 160) current = t;
+});
+if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) current = 'bacaan';
+setActiveProfileTab(current);
+}, { passive: true });
 function backToStudentList() { if (activeClass) selectClass(activeClass); else switchSidebarView('dashboard'); }
 function printStudentReport() { window.print(); }
 
